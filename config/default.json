@@ -1,0 +1,15 @@
+{
+    "server": {
+        "connection": {
+            "server": "(localdb)\\SqlExpress",
+            "database": "FakeLock",
+            "options": {
+                "trustedConnection": true
+            }
+        }
+    },
+    "jwtPrivateKey": "jwtPrivateKey",
+    "headerKey": "x-auth-token",
+    "port": 3000,
+    "photoPath": "C:\\Users\\LiorEzra73\\Desktop\\פרוייקט יהלום\\Server\\staticFiles\\postsPhotos"
+}
