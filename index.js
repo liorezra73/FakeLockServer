@@ -10,18 +10,21 @@ const postRoute = require("./controllers/postController");
 const commentRoute = require("./controllers/commentController");
 const postLikeRoute = require("./controllers/postLikeRoute");
 const photoRoute = require("./controllers/photoController");
-//const commentLikeRoute = require("./controllers/commentLikeRoute");
+const commentLikeRoute = require("./controllers/commentLikeRoute");
 
 var app = express();
 
 //middlewares
 // app.use(express.static('/staticFiles/postsPhotos'))
-app.use("/staticFiles/postsPhotos",express.static(__dirname + "/staticFiles/postsPhotos"));
+app.use(
+  "/staticFiles/postsPhotos",
+  express.static(__dirname + "/staticFiles/postsPhotos")
+);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-//app.use("/posts/:postId/comments/:commentId/likes", commentLikeRoute);
+app.use("/api/posts/:postId/comments/:commentId/likes", commentLikeRoute);
 app.use("/api/posts/:postId/comments", commentRoute);
 app.use("/api/posts/:postId/likes", postLikeRoute);
 app.use("/api/posts", postRoute);

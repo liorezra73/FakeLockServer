@@ -1,6 +1,6 @@
 const poolPromise = require("../db");
 const sql = require("mssql/msnodesqlv8");
-const generateError = require("../../errors/generateError")
+const generateError = require("../../errors/generateError");
 
 const getCommentsByPostId = async postId => {
   const pool = await poolPromise;
@@ -44,10 +44,9 @@ const getCommentById = async id => {
     .input("id", sql.BigInt, id)
     .execute("GetCommentById");
 
-    if(result.recordset.length > 0){
-      return result.recordset[0];
-    }
-  else{
+  if (result.recordset.length > 0) {
+    return result.recordset[0];
+  } else {
     throw generateError(
       "CommentNotFound",
       `Post with the id "${id}" was not found`

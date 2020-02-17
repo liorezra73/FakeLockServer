@@ -6,9 +6,10 @@ const postRepository = require("../Data/repositories/postRepository");
 const getCommentsByPostId = async postId => {
   try {
     const res = await postRepository.getPostById(postId);
-    const result = await commentRepository.getCommentsByPostId(res.post.Id);
+    const result = await commentRepository.getCommentsByPostId(res.Id);
     return result;
   } catch (err) {
+    console.error(err)
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {

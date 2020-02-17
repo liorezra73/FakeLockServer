@@ -28,7 +28,7 @@ router.get(
   [validator.params(idModels.post)],
   async (req, res, next) => {
     try {
-      const result = await postService.getPostById(req.params.postId);
+      const result = await postService.getPostById(req.params.postId,req.user.id);
       res.status(200).send(result);
     } catch (err) {
       switch (err.name) {
@@ -70,7 +70,7 @@ router.post(
   [upload.single("photo"), photoMiddleware, validator.body(postModel)],
   async (req, res, next) => {
     try {
-      const result = await postService.createPost(req.body, 1, req.file);
+      const result = await postService.createPost(req.body, req.use.id, req.file);
       res.status(200).send(result);
     } catch (err) {
       err.status = 500;

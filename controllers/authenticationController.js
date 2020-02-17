@@ -8,7 +8,6 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/", validator.body(loginModel), async (req, res, next) => {
   try {
-    console.log("kk")
     const result = await authenticationService.loginFunc(req.body);
     res
       .header(config.get("headerKey"), result)

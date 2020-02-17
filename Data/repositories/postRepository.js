@@ -2,11 +2,12 @@ const poolPromise = require("../db");
 const sql = require("mssql/msnodesqlv8");
 const generateError = require("../../errors/generateError");
 
-const getPostById = async id => {
+const getPostById = async (id, userId) => {
   const pool = await poolPromise;
   const res = await pool
     .request()
     .input("id", sql.Int, id)
+    .input("likedUserId", sql.Int, userId)
     .execute("GetPostById");
   if (res.recordset.length > 0) {
     const post = {
@@ -14,7 +15,9 @@ const getPostById = async id => {
       user: res.recordsets[1][0],
       tags: res.recordsets[2],
       usersTags: res.recordsets[3],
-      likes: res.recordsets[4][0]
+      likes: res.recordsets[4][0],
+      commentsCount: res.recordsets[5][0],
+      isLikedByUser: res.recordsets[6].length > 0
     };
     post.Location = {
       latitude: post.Location.points[0].x,

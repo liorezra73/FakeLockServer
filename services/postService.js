@@ -24,10 +24,9 @@ const createPost = async (newPost, userId, photo) => {
     }
   }
 };
-const getPostById = async id => {
+const getPostById = async (id, userId) => {
   try {
-    const result = await postRepository.getPostById(id);
-    //get if the user liked post
+    const result = await postRepository.getPostById(id, userId);
     return result;
   } catch (err) {
     const dbError = dbErrorHandling(err);

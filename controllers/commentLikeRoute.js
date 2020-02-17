@@ -5,11 +5,11 @@ const likeService = require("../services/likeService");
 const validator = require("express-joi-validation").createValidator({});
 const idModels = require("../Shared/models/idModels");
 router.use(authMiddleware);
-router.use(validator.params(idModels.post));
+router.use(validator.params(idModels.comment));
 
 router.post("/", async (req, res, next) => {
   try {
-    await likeService.switchLikeToPost(req.user.id,req.params.postId)
+    await likeService.switchLikeToComment(req.user.id,req.params.commentId)
     res.status(200).send("ok");
   } catch (err) {
     err.status = 500
