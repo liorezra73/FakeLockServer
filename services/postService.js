@@ -13,12 +13,14 @@ const createPost = async (newPost, userId, photo) => {
     const result = await postRepository.createPost(newPost);
     return result;
   } catch (err) {
-    console.error(err)
+    console.error(err);
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
-    else {
-      //loger
-      throw generateError("ServerError", "Something went wrong");
+    switch (err.name) {
+      case "uploadPhotoFailed":
+        throw { ...err };
+      default:
+        throw generateError("ServerError", "Something went wrong");
     }
   }
 };

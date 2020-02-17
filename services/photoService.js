@@ -2,30 +2,46 @@ const sharp = require("sharp");
 const config = require("config");
 const uuidv4 = require("uuid/v4");
 const fs = require("fs");
+const fsPromises = fs.promises;
 const photoPath = config.get("photoPath");
+const generateError = require("../errors/generateError");
 
 const uploadPhoto = async photo => {
-  const res = await sharp(photo.buffer).webp();
-  const id = uuidv4();
-  await res
-    .resize(1000, 750, {
-      fit: sharp.fit.inside,
-      withoutEnlargement: true
-    })
-    .toFile(`${photoPath}/${id}.webp`);
+  try {
+    const res = await sharp(photo.buffer).webp();
+    const id = uuidv4();
+    await res
+      .resize(1000, 750, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true
+      })
+      .toFile(`${photoPath}/${id}.webp`);
 
-  await res
-    .resize(200, 150, {
-      fit: sharp.fit.inside,
-      withoutEnlargement: true
-    })
-    .toFile(`${photoPath}/${id}.small.webp`);
-  return id;
+    await res
+      .resize(200, 150, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true
+      })
+      .toFile(`${photoPath}/${id}.small.webp`);
+    return id;
+  } catch (err) {
+    throw generateError("uploadPhotoFailed", "failed to upload photo");
+  }
 };
 
 const extractPhoto = async name => {
-  const readStream = fs.createReadStream(`${photoPath}\\${name}.webp`);
-  return readStream;
+  try {
+    const url = `${photoPath}\\${name}.webp`;
+    await fsPromises.access(url);
+    const readStream = fs.createReadStream(url);
+    readStream.on("error", function(err) {
+      console.log(err);
+      readStream.close();
+    });
+    return readStream;
+  } catch (err) {
+    throw generateError("extractPhotoFailed", "failed to extract photo");
+  }
 };
 
 module.exports = { uploadPhoto, extractPhoto };

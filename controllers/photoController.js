@@ -8,6 +8,7 @@ router.get("/:photoId", async (req, res, next) => {
     const result = await photoService.extractPhoto(req.params.photoId);
     result.pipe(res);
   } catch (err) {
+    
     err.status = 404;
     next(err);
   }
