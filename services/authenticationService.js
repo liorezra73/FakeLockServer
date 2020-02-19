@@ -1,6 +1,5 @@
 const userRepository = require("../Data/repositories/userRepository");
-//const bcrypt = require("bcryptjs");
-const generateToken = require("../Shared/generateToken");
+const tokenService = require("./tokenService");
 const isObjFalse = require("../Shared/checkObj");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
@@ -24,7 +23,7 @@ const loginFunc = async newLogin => {
         "PasswordInvalid",
         `The password "${newLogin.password}" for "${newLogin.username}" is incorrect`
       );
-    const token = generateToken(user.Id);
+    const token = tokenService.generateToken(user.Id);
     return token;
   } catch (err) {
     const dbError = dbErrorHandling(err);

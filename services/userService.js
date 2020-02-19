@@ -1,5 +1,5 @@
 const userRepository = require("../Data/repositories/userRepository");
-const generateToken = require("../Shared/generateToken");
+const tokenService = require("./tokenService");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const logger = require("../logger/logger");
@@ -17,8 +17,7 @@ const createUser = async newUser => {
     newUser.password = await passwordService.encryption(newUser.password);
     
     const res = await userRepository.createUser(newUser);
-    const token = generateToken(res.Id);
-    return token;
+    return res;
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
