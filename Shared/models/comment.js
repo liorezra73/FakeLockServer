@@ -5,6 +5,6 @@ const comment = Joi.object({
   content: validation.stringValidation(3, 200),
   tags: Joi.array().items(Joi.string()),
   usersTags: Joi.array().items(Joi.number())
-});
+}).or("content", "tags", "usersTags");
 
 module.exports = comment;
