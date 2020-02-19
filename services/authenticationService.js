@@ -5,6 +5,7 @@ const isObjFalse = require("../Shared/checkObj");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const logger = require("../logger/logger");
+const passwordService = require("./passwordService");
 
 const loginFunc = async newLogin => {
   try {
@@ -14,7 +15,11 @@ const loginFunc = async newLogin => {
         "UserNotFound",
         `User with username "${newLogin.username}" not found!`
       );
-    if (newLogin.password !== user.Password)
+    const isMatch = await passwordService.comparison(
+      newLogin.password,
+      user.Password
+    );
+    if (!isMatch)
       throw generateError(
         "PasswordInvalid",
         `The password "${newLogin.password}" for "${newLogin.username}" is incorrect`

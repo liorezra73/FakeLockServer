@@ -60,11 +60,11 @@ router.delete(
   [validator.params(idModels.post)],
   async (req, res, next) => {
     try {
-      const result = await postService.deletePost(req.params.postId);
-      res.status(200).send(result);
+      await postService.deletePost(req.params.postId);
+      res.status(200).send({ ok: true });
     } catch (err) {
       switch (err.name) {
-        case "PostNotFount":
+        case "PostNotFound":
           err.status = 404;
           break;
         default:
@@ -88,7 +88,6 @@ router.post(
       );
       res.status(200).send(result);
     } catch (err) {
-      console.log(err);
       err.status = 500;
       next(err);
     }

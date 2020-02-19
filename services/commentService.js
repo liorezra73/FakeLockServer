@@ -10,7 +10,6 @@ const getCommentsByPostId = async postId => {
     const result = await commentRepository.getCommentsByPostId(res.Id);
     return result;
   } catch (err) {
-    console.error(err)
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {

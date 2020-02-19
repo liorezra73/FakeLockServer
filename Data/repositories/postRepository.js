@@ -50,7 +50,6 @@ const createPost = async newPost => {
 
 const getPosts = async filter => {
   const pool = await poolPromise;
-  console.log(filter.orderBy);
   const result = await pool
     .request()
     .input("publishers", sql.NVarChar, filter.publishers?filter.publishers:null)
@@ -63,7 +62,13 @@ const getPosts = async filter => {
     .input("userTags", sql.NVarChar, filter.usersTags?filter.usersTags:null)
     .input("orderBy",sql.VarChar, filter.orderBy)
     .execute("FilterPosts");
-  console.log(result.recordset[0]);
+  result.recordsets[0].forEach(post=>{
+    post.location = {
+      latitude: post.location.points[0].x,
+      longtitude: post.location.points[0].y
+    };
+  })
+  
   return result.recordsets[0];
 };
 

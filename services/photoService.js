@@ -35,7 +35,6 @@ const extractPhoto = async name => {
     await fsPromises.access(url);
     const readStream = fs.createReadStream(url);
     readStream.on("error", function(err) {
-      console.log(err);
       readStream.close();
     });
     return readStream;

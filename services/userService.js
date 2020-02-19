@@ -1,10 +1,9 @@
 const userRepository = require("../Data/repositories/userRepository");
-//const bcrypt = require("bcryptjs");
 const generateToken = require("../Shared/generateToken");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const logger = require("../logger/logger");
-
+const passwordService = require("./passwordService");
 
 const createUser = async newUser => {
   try {
@@ -15,6 +14,8 @@ const createUser = async newUser => {
         `Username ${newUser.username} already exists in database!`
       );
     }
+    newUser.password = await passwordService.encryption(newUser.password);
+    
     const res = await userRepository.createUser(newUser);
     const token = generateToken(res.Id);
     return token;

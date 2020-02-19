@@ -44,7 +44,7 @@ const getPostById = async (id, userId) => {
 const deletePost = async id => {
   try {
     const existPost = await getPostById(id);
-    await postRepository.deletePost(existPost.post.Id);
+    await postRepository.deletePost(existPost.Id);
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;

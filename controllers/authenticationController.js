@@ -14,7 +14,6 @@ router.post("/", validator.body(loginModel), async (req, res, next) => {
       .status(200)
       .json(result);
   } catch (err) {
-    console.log(err);
     switch (err.name) {
       case "UserNotFound":
         err.status = 404;
