@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const postService = require("../services/postService");
 const postModel = require("../Shared/models/post");
+const filterModel = require("../Shared/models/filter");
 const idModels = require("../Shared/models/idModels");
 const photoMiddleware = require("../middleware/photoMiddleware");
 const validator = require("express-joi-validation").createValidator({});
@@ -13,14 +14,22 @@ const upload = multer({
 });
 router.use(authMiddleware);
 
-router.get("/", async (req, res, next) => {
+router.get("/", validator.query(filterModel), async (req, res, next) => {
   try {
-    const result = await postService.getAllPosts();
-    res.status(200).send(result);
+    console.log(req.query);
+    const result = await postService.getPosts(req.query);
+    res.status(200).json(result);
   } catch (err) {
-    console.log(err);
+    switch (err.name) {
+      case "PostsNotFound":
+        err.status = 404;
+        break;
+      default:
+        err.status = 500;
+        break;
+    }
+    next(err);
   }
-  next(err);
 });
 
 router.get(
@@ -28,7 +37,10 @@ router.get(
   [validator.params(idModels.post)],
   async (req, res, next) => {
     try {
-      const result = await postService.getPostById(req.params.postId,req.user.id);
+      const result = await postService.getPostById(
+        req.params.postId,
+        req.user.id
+      );
       res.status(200).send(result);
     } catch (err) {
       switch (err.name) {
@@ -70,7 +82,11 @@ router.post(
   [upload.single("photo"), photoMiddleware, validator.body(postModel)],
   async (req, res, next) => {
     try {
-      const result = await postService.createPost(req.body, req.use.id, req.file);
+      const result = await postService.createPost(
+        req.body,
+        req.use.id,
+        req.file
+      );
       res.status(200).send(result);
     } catch (err) {
       err.status = 500;

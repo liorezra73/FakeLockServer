@@ -48,9 +48,22 @@ const createPost = async newPost => {
   return result.recordset[0];
 };
 
-const getAllPosts = async () => {
+const getPosts = async filter => {
   const pool = await poolPromise;
-  const result = await pool.request().execute("GetAllPosts");
+  console.log(filter.orderBy);
+  const result = await pool
+    .request()
+    .input("publishers", sql.NVarChar, filter.publishers?filter.publishers:null)
+    .input("startDate", sql.DateTime, filter.startDate?filter.startDate:null)
+    .input("endDate", sql.DateTime, filter.endDate?filter.endDate:null)
+    .input("positionLat", sql.Float, filter.latitude?filter.latitude:null)
+    .input("positionLong", sql.Float, filter.longtitude?filter.longtitude:null)
+    .input("distance", sql.Float, filter.distance?filter.distance:null)
+    .input("tagsJson", sql.NVarChar, filter.tags?filter.tags:null)
+    .input("userTags", sql.NVarChar, filter.usersTags?filter.usersTags:null)
+    .input("orderBy",sql.VarChar, filter.orderBy)
+    .execute("FilterPosts");
+  console.log(result.recordset[0]);
   return result.recordsets[0];
 };
 
@@ -66,6 +79,6 @@ const deletePost = async id => {
 module.exports = {
   getPostById,
   createPost,
-  getAllPosts,
+  getPosts,
   deletePost
 };

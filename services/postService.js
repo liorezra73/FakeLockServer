@@ -59,12 +59,30 @@ const deletePost = async id => {
 };
 
 //fixing?
-const getAllPosts = async () => {
+const getPosts = async filter => {
   try {
-    const result = await postRepository.getAllPosts();
-    return result;
+    filter.publishers = JSON.stringify(filter.publishers);
+    filter.tags = JSON.stringify(filter.tags);
+    filter.usersTags = JSON.stringify(filter.usersTags);
+    const result = await postRepository.getPosts(filter);
+    if (result.length > 0) {
+      return result;
+    } else {
+      throw generateError(
+        "PostsNotFound",
+        "there is no posts exists"
+      );
+    }
   } catch (err) {
-    throw err;
+    const dbError = dbErrorHandling(err);
+    if (dbError) throw dbError;
+    switch (err.name) {
+      case "PostsNotFound":
+        throw { ...err };
+      default:
+        //loger
+        throw generateError("ServerError", "Something went wrong");
+    }
   }
 };
 
@@ -72,5 +90,5 @@ module.exports = {
   createPost,
   getPostById,
   deletePost,
-  getAllPosts
+  getPosts
 };
