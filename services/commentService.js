@@ -2,6 +2,7 @@ const commentRepository = require("../Data/repositories/commentRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const postRepository = require("../Data/repositories/postRepository");
+const logger = require("../logger/logger");
 
 const getCommentsByPostId = async postId => {
   try {
@@ -16,7 +17,7 @@ const getCommentsByPostId = async postId => {
       case "PostNotFound":
         throw { ...err };
       default:
-        //loger
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -38,7 +39,7 @@ const createComment = async (comment, userId, postId) => {
       case "PostNotFound":
         throw { ...err };
       default:
-        //loger
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -57,7 +58,7 @@ const deleteComment = async (postId, commentId) => {
       case "CommentNotFound":
         throw { ...err };
       default:
-        //loger
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }

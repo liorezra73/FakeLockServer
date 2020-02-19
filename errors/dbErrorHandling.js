@@ -1,4 +1,5 @@
 const generateError = require("./generateError");
+const logger = require("../logger/logger");
 
 const dbErrors = [
   "ConnectionError",
@@ -10,7 +11,7 @@ const dbErrors = [
 const dbErrorHandling = err => {
   dbErrors.forEach(error => {
     if (err.name === error) {
-        //logger
+      logger.error(err);
       return generateError("DbError", "there was an error in the database!");
     }
   });

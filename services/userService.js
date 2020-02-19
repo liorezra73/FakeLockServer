@@ -3,6 +3,8 @@ const userRepository = require("../Data/repositories/userRepository");
 const generateToken = require("../Shared/generateToken");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
+const logger = require("../logger/logger");
+
 
 const createUser = async newUser => {
   try {
@@ -23,7 +25,7 @@ const createUser = async newUser => {
       case "UsernameExist":
         throw { ...err };
       default:
-        //logger
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -39,7 +41,7 @@ const getUsers = async () => {
       case "NoUsersFound":
         throw { ...err };
       default:
-        //logger
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }

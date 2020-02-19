@@ -1,6 +1,7 @@
 const likeRepository = require("../Data/repositories/likeRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
+const logger = require("../logger/logger");
 
 const switchLikeToPost = async (userId, postId) => {
   try {
@@ -12,6 +13,7 @@ const switchLikeToPost = async (userId, postId) => {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     else {
+      logger.error(err);
       throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -27,6 +29,7 @@ const switchLikeToComment = async (userId, commentId) => {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     else {
+      logger.error(err);
       throw generateError("ServerError", "Something went wrong");
     }
   }

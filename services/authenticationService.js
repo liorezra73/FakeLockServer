@@ -4,6 +4,7 @@ const generateToken = require("../Shared/generateToken");
 const isObjFalse = require("../Shared/checkObj");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
+const logger = require("../logger/logger");
 
 const loginFunc = async newLogin => {
   try {
@@ -21,7 +22,6 @@ const loginFunc = async newLogin => {
     const token = generateToken(user.Id);
     return token;
   } catch (err) {
-    console.log(err)
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -30,7 +30,7 @@ const loginFunc = async newLogin => {
       case "PasswordInvalid":
         throw { ...err };
       default:
-        //loger
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }

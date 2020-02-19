@@ -16,7 +16,6 @@ router.use(authMiddleware);
 
 router.get("/", validator.query(filterModel), async (req, res, next) => {
   try {
-    console.log(req.query);
     const result = await postService.getPosts(req.query);
     res.status(200).json(result);
   } catch (err) {
@@ -84,11 +83,12 @@ router.post(
     try {
       const result = await postService.createPost(
         req.body,
-        req.use.id,
+        req.user.id,
         req.file
       );
       res.status(200).send(result);
     } catch (err) {
+      console.log(err);
       err.status = 500;
       next(err);
     }

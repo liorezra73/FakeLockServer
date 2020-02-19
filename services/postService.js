@@ -2,7 +2,7 @@ const postRepository = require("../Data/repositories/postRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const photoService = require("./photoService");
-
+const logger = require("../logger/logger");
 const createPost = async (newPost, userId, photo) => {
   try {
     newPost.userId = userId;
@@ -13,13 +13,13 @@ const createPost = async (newPost, userId, photo) => {
     const result = await postRepository.createPost(newPost);
     return result;
   } catch (err) {
-    console.error(err);
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
       case "uploadPhotoFailed":
         throw { ...err };
       default:
+        logger.error(err)
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -35,7 +35,7 @@ const getPostById = async (id, userId) => {
       case "PostNotFound":
         throw { ...err };
       default:
-        //loger
+        logger.error(err)
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -52,7 +52,7 @@ const deletePost = async id => {
       case "PostNotFound":
         throw { ...err };
       default:
-        //loger
+        logger.error(err)
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -68,10 +68,7 @@ const getPosts = async filter => {
     if (result.length > 0) {
       return result;
     } else {
-      throw generateError(
-        "PostsNotFound",
-        "there is no posts exists"
-      );
+      throw generateError("PostsNotFound", "there is no posts exists");
     }
   } catch (err) {
     const dbError = dbErrorHandling(err);
@@ -80,7 +77,7 @@ const getPosts = async filter => {
       case "PostsNotFound":
         throw { ...err };
       default:
-        //loger
+        logger.error(err)
         throw generateError("ServerError", "Something went wrong");
     }
   }

@@ -14,8 +14,6 @@ const commentLikeRoute = require("./controllers/commentLikeRoute");
 
 var app = express();
 
-//middlewares
-// app.use(express.static('/staticFiles/postsPhotos'))
 app.use(
   "/staticFiles/postsPhotos",
   express.static(__dirname + "/staticFiles/postsPhotos")
