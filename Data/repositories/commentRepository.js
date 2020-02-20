@@ -2,16 +2,20 @@ const poolPromise = require("../db");
 const sql = require("mssql/msnodesqlv8");
 const generateError = require("../../errors/generateError");
 
-const getCommentsByPostId = async postId => {
+const getCommentsByPostId = async (postId, userId) => {
   const pool = await poolPromise;
   const result = await pool
     .request()
     .input("id", sql.BigInt, postId)
+    .input("userId", sql.BigInt, userId)
     .execute("GetCommentsByPostId");
   const comments = result.recordset;
   comments.forEach(comment => {
     comment.tags = JSON.parse(comment.tags);
     comment.usersTags = JSON.parse(comment.usersTags);
+    comment.userLiked
+      ? (comment.userLiked = true)
+      : (comment.userLiked = false);
   });
   return comments;
 };

@@ -10,7 +10,7 @@ router.use(validator.params(idModels.post));
 router.post("/", async (req, res, next) => {
   try {
     await likeService.switchLikeToPost(req.user.id,req.params.postId)
-    res.status(200).send("ok");
+    res.status(200).send({ ok: true});
   } catch (err) {
     err.status = 500
     next(err);

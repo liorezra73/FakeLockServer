@@ -4,10 +4,10 @@ const generateError = require("../errors/generateError");
 const postRepository = require("../Data/repositories/postRepository");
 const logger = require("../logger/logger");
 
-const getCommentsByPostId = async postId => {
+const getCommentsByPostId = async (postId,userId) => {
   try {
     const res = await postRepository.getPostById(postId);
-    const result = await commentRepository.getCommentsByPostId(res.Id);
+    const result = await commentRepository.getCommentsByPostId(res.Id,userId);
     return result;
   } catch (err) {
     const dbError = dbErrorHandling(err);

@@ -12,7 +12,7 @@ const postLikeRoute = require("./controllers/postLikeRoute");
 const photoRoute = require("./controllers/photoController");
 const commentLikeRoute = require("./controllers/commentLikeRoute");
 
-var app = express();
+const app = express();
 
 app.use(
   "/staticFiles/postsPhotos",

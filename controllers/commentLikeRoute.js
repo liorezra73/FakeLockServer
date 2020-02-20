@@ -9,10 +9,11 @@ router.use(validator.params(idModels.comment));
 
 router.post("/", async (req, res, next) => {
   try {
-    await likeService.switchLikeToComment(req.user.id,req.params.commentId)
-    res.status(200).send("ok");
+    console.log(req.user.id)
+    await likeService.switchLikeToComment(req.user.id, req.params.commentId);
+    res.status(200).send({ ok: true });
   } catch (err) {
-    err.status = 500
+    err.status = 500;
     next(err);
   }
 });

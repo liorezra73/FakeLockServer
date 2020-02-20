@@ -10,7 +10,7 @@ router.use(validator.params(idModels.post));
 
 router.get("/", async (req, res, next) => {
   try {
-    const result = await commentService.getCommentsByPostId(req.params.postId);
+    const result = await commentService.getCommentsByPostId(req.params.postId,req.user.id);
     res.status(200).send(result);
   } catch (err) {
     switch (err.name) {
