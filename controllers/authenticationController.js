@@ -30,7 +30,7 @@ router.post("/", validator.body(loginModel), async (req, res, next) => {
 });
 
 router.get("/",authMiddleware, async (req, res, next) => {
-  res.status(200).send(true);
+  res.status(200).send({ ok: true});
 });
 
 module.exports = router;

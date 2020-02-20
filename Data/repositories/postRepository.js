@@ -15,8 +15,8 @@ const getPostById = async (id, userId) => {
       user: res.recordsets[1][0],
       tags: res.recordsets[2],
       usersTags: res.recordsets[3],
-      likes: res.recordsets[4][0],
-      commentsCount: res.recordsets[5][0],
+      likes: res.recordsets[4][0].likes,
+      commentsCount: res.recordsets[5][0].commentsCount,
       isLikedByUser: res.recordsets[6].length > 0
     };
     post.Location = {

@@ -32,7 +32,7 @@ router.post("/", validator.body(commentModel), async (req, res, next) => {
       req.user.id,
       req.params.postId
     );
-    res.status(201).send("succsess");
+    res.status(201).send({ ok: true});
   } catch (err) {
     switch (err.name) {
       case "PostNotFound":
@@ -55,7 +55,7 @@ router.delete(
         req.params.postId,
         req.params.commentId
       );
-      res.status(200).send("ok");
+      res.status(200).send({ ok: true});
     } catch (err) {
       switch (err.name) {
         case "PostNotFound":
