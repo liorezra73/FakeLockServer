@@ -1,24 +1,39 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const tokenService = require("../services/tokenService");
+const generateError = require("../errors/generateError");
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const token = req.header(config.get("headerKey"));
-    if (!token) return res.status(401).send("Access denied! no token provided");
-    const decoded = jwt.verify(token, config.get("jwtPrivateKey"));
-    if (!decoded)
-      return res.status(401).send("Access denied! token is not valid");
+    if (!token) {
+      throw generateError("NoToken", "no token provided");
+    }
+    const decoded = tokenService.decodeToken(token);
+    if (!decoded) {
+      throw generateError("TokenNotValid", "token is not valid");
+    }
     req.user = decoded;
     next();
   } catch (err) {
     switch (err.name) {
       case "TokenExpiredError":
-        res.status(401).send(err.message);
+        err.status = 401;
+        break;
+      case "NoToken":
+        err.status = 401;
+        break;
+      case "TokenNotValid":
+        err.status = 401;
+        break;
       case "JsonWebTokenError":
-        res.status(401).send(err.message);
+        err.status = 401;
+        break;
       default:
-        res.status(500).send("something wrong happened in the server");
+        err.status = 500;
+        break;
     }
+    next(err);
   }
 };
 module.exports = authMiddleware;
