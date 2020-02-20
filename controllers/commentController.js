@@ -10,11 +10,17 @@ router.use(validator.params(idModels.post));
 
 router.get("/", async (req, res, next) => {
   try {
-    const result = await commentService.getCommentsByPostId(req.params.postId,req.user.id);
+    const result = await commentService.getCommentsByPostId(
+      req.params.postId,
+      req.user.id
+    );
     res.status(200).send(result);
   } catch (err) {
     switch (err.name) {
       case "PostNotFound":
+        err.status = 400;
+        break;
+      case "CommnetsNotFound":
         err.status = 404;
         break;
       default:
@@ -32,7 +38,7 @@ router.post("/", validator.body(commentModel), async (req, res, next) => {
       req.user.id,
       req.params.postId
     );
-    res.status(201).send({ ok: true});
+    res.status(201).send({ ok: true });
   } catch (err) {
     switch (err.name) {
       case "PostNotFound":
@@ -55,7 +61,7 @@ router.delete(
         req.params.postId,
         req.params.commentId
       );
-      res.status(200).send({ ok: true});
+      res.status(200).send({ ok: true });
     } catch (err) {
       switch (err.name) {
         case "PostNotFound":

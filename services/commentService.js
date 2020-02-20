@@ -4,16 +4,24 @@ const generateError = require("../errors/generateError");
 const postRepository = require("../Data/repositories/postRepository");
 const logger = require("../logger/logger");
 
-const getCommentsByPostId = async (postId,userId) => {
+const getCommentsByPostId = async (postId, userId) => {
   try {
     const res = await postRepository.getPostById(postId);
-    const result = await commentRepository.getCommentsByPostId(res.Id,userId);
-    return result;
+    const result = await commentRepository.getCommentsByPostId(res.Id, userId);
+    if (result.length > 0) {
+      return result;
+    } else {
+      throw generateError(
+        "CommnetsNotFound",`there is no comments on post ${postId}`
+      );
+    }
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
       case "PostNotFound":
+        throw { ...err };
+      case "CommnetsNotFound":
         throw { ...err };
       default:
         logger.error(err);

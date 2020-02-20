@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
 const photoService = require("../services/photoService");
-router.use(authMiddleware);
 
 router.get("/:photoId", async (req, res, next) => {
   try {
