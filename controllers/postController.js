@@ -17,6 +17,7 @@ router.use(authMiddleware);
 router.get("/", validator.query(filterModel), async (req, res, next) => {
   try {
     const result = await postService.getPosts(req.query);
+
     res.status(200).json(result);
   } catch (err) {
     switch (err.name) {

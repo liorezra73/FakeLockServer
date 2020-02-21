@@ -33,13 +33,14 @@ const getCommentsByPostId = async (postId, userId) => {
 const createComment = async (comment, userId, postId) => {
   try {
     const existPost = await postRepository.getPostById(postId);
-    comment.postId = existPost.post.Id;
+    comment.postId = existPost.Id;
     comment.userId = userId;
     comment.publishDate = new Date();
     comment.tags = JSON.stringify(comment.tags);
     comment.usersTags = JSON.stringify(comment.usersTags);
     await commentRepository.createComment(comment);
   } catch (err) {
+    console.log(err)
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
