@@ -29,12 +29,12 @@ const getUserByUsername = async username => {
   return user.recordset[0];
 };
 
-const getUsers = async startsWith => {
+const GetUsersByStartsWith = async startsWith => {
   const pool = await poolPromise;
   const result = await pool
     .request()
     .input("username", sql.VarChar, startsWith)
-    .execute("GetAllUsers");
+    .execute("GetUsersByStartsWith");
   if (result.recordset.length > 0) {
     return result.recordset;
   } else {
@@ -80,7 +80,7 @@ const changeUserPassword = async (username, password) => {
 };
 module.exports = {
   getUserById,
-  getUsers,
+  GetUsersByStartsWith,
   createUser,
   updateUser,
   changeUserPassword,

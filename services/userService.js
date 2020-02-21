@@ -31,9 +31,9 @@ const createUser = async newUser => {
   }
 };
 
-const getUsers = async (startsWith) => {
+const GetUsersByStartsWith = async (startsWith) => {
   try {
-    return await userRepository.getUsers(startsWith);
+    return await userRepository.GetUsersByStartsWith(startsWith);
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;

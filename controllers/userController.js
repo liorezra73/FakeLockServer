@@ -10,7 +10,7 @@ const startsWith= require("../Shared/models/startsWith")
 router.get("/",[authMiddleware,validator.query(startsWith)], async (req, res, next) => {
   try {
     console.log(req.query)
-    const result = await userService.getUsers(req.query.username);
+    const result = await userService.GetUsersByStartsWith(req.query.username);
     res.status(200).send(result);
   } catch (err) {
     switch (err.name) {
