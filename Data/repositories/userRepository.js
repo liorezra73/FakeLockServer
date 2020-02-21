@@ -29,9 +29,12 @@ const getUserByUsername = async username => {
   return user.recordset[0];
 };
 
-const getUsers = async () => {
+const getUsers = async startsWith => {
   const pool = await poolPromise;
-  const result = await pool.request().execute("GetAllUsers");
+  const result = await pool
+    .request()
+    .input("username", sql.VarChar, startsWith)
+    .execute("GetAllUsers");
   if (result.recordset.length > 0) {
     return result.recordset;
   } else {

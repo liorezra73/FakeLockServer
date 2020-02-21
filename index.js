@@ -2,6 +2,7 @@ var express = require("express");
 const config = require("config");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const authMiddleware = require("./middleware/authMiddleware");
 
 //routs/controllers
 const userRoute = require("./controllers/userController");
@@ -38,6 +39,8 @@ app.use((err, req, res, next) => {
     res.status(500).send("Something broke!");
   }
 });
+
+
 
 //check config
 if (!config.get("jwtPrivateKey")) {

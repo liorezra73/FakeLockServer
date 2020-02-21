@@ -5,11 +5,12 @@ const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 const userModel = require("../Shared/models/user");
 const validator = require("express-joi-validation").createValidator({});
-var createError = require("http-errors");
+const startsWith= require("../Shared/models/startsWith")
 
-router.get("/", async (req, res, next) => {
+router.get("/",[authMiddleware,validator.query(startsWith)], async (req, res, next) => {
   try {
-    const result = await userService.getUsers();
+    console.log(req.query)
+    const result = await userService.getUsers(req.query.username);
     res.status(200).send(result);
   } catch (err) {
     switch (err.name) {
