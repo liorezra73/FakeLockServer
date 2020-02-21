@@ -2,16 +2,15 @@ var express = require("express");
 const config = require("config");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const authMiddleware = require("./middleware/authMiddleware");
 
 //routs/controllers
 const userRoute = require("./controllers/userController");
 const authRoute = require("./controllers/authenticationController");
 const postRoute = require("./controllers/postController");
 const commentRoute = require("./controllers/commentController");
-const postLikeRoute = require("./controllers/postLikeRoute");
+const postLikeRoute = require("./controllers/postLikeController");
 const photoRoute = require("./controllers/photoController");
-const commentLikeRoute = require("./controllers/commentLikeRoute");
+const commentLikeRoute = require("./controllers/commentLikeController");
 
 const app = express();
 
@@ -35,12 +34,9 @@ app.use((err, req, res, next) => {
   if (err.status < 500) {
     res.status(err.status).send(err.message);
   } else {
-    //logger
     res.status(500).send("Something broke!");
   }
 });
-
-
 
 //check config
 if (!config.get("jwtPrivateKey")) {

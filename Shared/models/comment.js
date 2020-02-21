@@ -1,8 +1,7 @@
 const Joi = require("@hapi/joi");
-const validation = require("../validation");
 
 const comment = Joi.object({
-  content: validation.stringValidation(3, 200),
+  content: Joi.string(),
   tags: Joi.array().items(Joi.string()),
   usersTags: Joi.array().items(Joi.number())
 }).or("content", "tags", "usersTags");
