@@ -49,5 +49,5 @@ const GetUsersByStartsWith = async (startsWith) => {
 
 module.exports = {
   createUser,
-  getUsers
+  GetUsersByStartsWith
 };
