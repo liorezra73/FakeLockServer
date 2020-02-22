@@ -89,6 +89,8 @@ router.post(
       );
       res.status(200).send(result);
     } catch (err) {
+      console.log(err);
+
       err.status = 500;
       next(err);
     }

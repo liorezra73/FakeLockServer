@@ -1,4 +1,6 @@
 const generateError = require("../errors/generateError");
+const sharp = require("sharp");
+
 const photoMiddleware = (req, res, next) => {
   try {
     const isImage = req.file && req.file.mimetype.startsWith("image");
@@ -14,7 +16,7 @@ const photoMiddleware = (req, res, next) => {
         err.status = 400;
         break;
       case "ImageSizeNotValid":
-        err.status = 400;
+        err.status = 406;
         break;
       default:
         err.status = 500;

@@ -13,8 +13,6 @@ const authMiddleware = async (req, res, next) => {
       throw generateError("TokenNotValid", "token is not valid");
     }
     req.user = decoded;
-    // res.header(config.get("headerKey"), tokenService.generateToken(req.user.id));
-    res.header(config.get("headerKey"), "dasdasdasas");
     next();
   } catch (err) {
     switch (err.name) {

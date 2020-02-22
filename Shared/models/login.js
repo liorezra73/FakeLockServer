@@ -3,7 +3,7 @@ const validation = require("../validation")
 
 
 const login = Joi.object({
-  username: validation.stringValidation(3, 50).alphanum(),
+  username: validation.stringValidation(3, 200).alphanum(),
   password: validation.stringValidation(3, 1024),
 })
 

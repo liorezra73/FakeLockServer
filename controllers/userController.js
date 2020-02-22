@@ -35,7 +35,7 @@ router.post("/", validator.body(userModel), async (req, res, next) => {
   } catch (err) {
     switch (err.name) {
       case "UsernameExist":
-        err.status = 400;
+        err.status = 409;
         break;
       default:
         err.status = 500;
