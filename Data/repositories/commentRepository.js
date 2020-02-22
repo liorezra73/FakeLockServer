@@ -31,6 +31,13 @@ const createComment = async comment => {
     .input("tagsJson", sql.NVarChar, comment.tags)
     .input("usersTagsJson", sql.NVarChar, comment.usersTags)
     .execute("CreateNewComment");
+
+  if (result.recordsets.length > 0) {
+    const comment = { ...result.recordsets[0][0] };
+    comment.tags = { ...result.recordsets[1][0] };
+    comment.usersTags = { ...result.recordsets[2][0] };
+    return comment;
+  }
 };
 
 const deleteComment = async id => {

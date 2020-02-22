@@ -33,12 +33,12 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", validator.body(commentModel), async (req, res, next) => {
   try {
-    await commentService.createComment(
+    const result = await commentService.createComment(
       req.body,
       req.user.id,
       req.params.postId
     );
-    res.status(201).send({ ok: true });
+    res.status(201).send(result);
   } catch (err) {
     switch (err.name) {
       case "PostNotFound":

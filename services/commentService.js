@@ -38,7 +38,7 @@ const createComment = async (comment, userId, postId) => {
     comment.publishDate = new Date();
     comment.tags = JSON.stringify(comment.tags);
     comment.usersTags = JSON.stringify(comment.usersTags);
-    await commentRepository.createComment(comment);
+    return await commentRepository.createComment(comment);
   } catch (err) {
     console.log(err)
     const dbError = dbErrorHandling(err);
