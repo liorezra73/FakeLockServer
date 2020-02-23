@@ -2,9 +2,11 @@ const commentLikeRepository = require("../Data/repositories/commentsLikeReposito
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const logger = require("../logger/logger");
+const commentRepository = require("../Data/repositories/commentRepository");
 
 const doLike = async (userId, commentId) => {
   try {
+    await commentRepository.getCommentById(commentId);
     const didLike = await commentLikeRepository.userLikedComment(
       userId,
       commentId
@@ -22,6 +24,8 @@ const doLike = async (userId, commentId) => {
     switch (err.name) {
       case "LikeExists":
         throw { ...err };
+      case "CommentNotFound":
+        throw { ...err };
       default:
         logger.error(err);
         throw generateError("ServerError", "Something went wrong");
@@ -31,6 +35,7 @@ const doLike = async (userId, commentId) => {
 
 const unLike = async (userId, commentId) => {
   try {
+    await commentRepository.getCommentById(commentId);
     const didLike = await commentLikeRepository.userLikedComment(
       userId,
       commentId
@@ -47,6 +52,8 @@ const unLike = async (userId, commentId) => {
     if (dbError) throw dbError;
     switch (err.name) {
       case "LikeNotExists":
+        throw { ...err };
+      case "CommentNotFound":
         throw { ...err };
       default:
         logger.error(err);

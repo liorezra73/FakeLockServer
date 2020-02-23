@@ -1,10 +1,12 @@
 const postLikeRepository = require("../Data/repositories/postLikeRepository");
+const postRepository = require("../Data/repositories/postRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const logger = require("../logger/logger");
 
 const doLike = async (userId, postId) => {
   try {
+    await postRepository.getPostById(postId);
     const didLike = await postLikeRepository.userLikedPost(userId, postId);
     if (didLike) {
       throw generateError(
@@ -19,6 +21,8 @@ const doLike = async (userId, postId) => {
     switch (err.name) {
       case "LikeExists":
         throw { ...err };
+      case "PostNotFound":
+        throw { ...err };
       default:
         logger.error(err);
         throw generateError("ServerError", "Something went wrong");
@@ -28,6 +32,7 @@ const doLike = async (userId, postId) => {
 
 const unLike = async (userId, postId) => {
   try {
+    await postRepository.getPostById(postId);
     const didLike = await postLikeRepository.userLikedPost(userId, postId);
     if (!didLike) {
       throw generateError(
@@ -41,6 +46,8 @@ const unLike = async (userId, postId) => {
     if (dbError) throw dbError;
     switch (err.name) {
       case "LikeNotExists":
+        throw { ...err };
+      case "PostNotFound":
         throw { ...err };
       default:
         logger.error(err);

@@ -16,6 +16,9 @@ router.post("/", async (req, res, next) => {
       case "LikeExists":
         err.status = 400;
         break;
+      case "CommentNotFound":
+        err.status = 404;
+        break;
       default:
         err.status = 500;
         break;
@@ -32,6 +35,9 @@ router.delete("/", async (req, res, next) => {
     switch (err.name) {
       case "LikeNotExists":
         err.status = 400;
+        break;
+      case "CommentNotFound":
+        err.status = 404;
         break;
       default:
         err.status = 500;

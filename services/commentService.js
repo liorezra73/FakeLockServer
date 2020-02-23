@@ -12,7 +12,8 @@ const getCommentsByPostId = async (postId, userId) => {
       return result;
     } else {
       throw generateError(
-        "CommnetsNotFound",`there is no comments on post ${postId}`
+        "CommnetsNotFound",
+        `there is no comments on post ${postId}`
       );
     }
   } catch (err) {
@@ -40,7 +41,7 @@ const createComment = async (comment, userId, postId) => {
     comment.usersTags = JSON.stringify(comment.usersTags);
     return await commentRepository.createComment(comment);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -54,7 +55,7 @@ const createComment = async (comment, userId, postId) => {
 };
 const deleteComment = async (postId, commentId) => {
   try {
-    const existPost = await postRepository.getPostById(postId);
+    await postRepository.getPostById(postId);
     const existComment = await commentRepository.getCommentById(commentId);
     await commentRepository.deleteComment(existComment.Id);
   } catch (err) {
