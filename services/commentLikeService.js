@@ -6,7 +6,7 @@ const commentRepository = require("../Data/repositories/commentRepository");
 
 const doLike = async (userId, commentId) => {
   try {
-    await commentRepository.getCommentById(commentId);
+    await commentRepository.getCommentById(commentId,userId);
     const didLike = await commentLikeRepository.userLikedComment(
       userId,
       commentId
@@ -35,7 +35,7 @@ const doLike = async (userId, commentId) => {
 
 const unLike = async (userId, commentId) => {
   try {
-    await commentRepository.getCommentById(commentId);
+    await commentRepository.getCommentById(commentId,userId);
     const didLike = await commentLikeRepository.userLikedComment(
       userId,
       commentId

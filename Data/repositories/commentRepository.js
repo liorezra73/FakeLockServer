@@ -48,11 +48,12 @@ const deleteComment = async id => {
     .execute("DeleteComment");
 };
 
-const getCommentById = async id => {
+const getCommentById = async (id,userId) => {
   const pool = await poolPromise;
   const result = await pool
     .request()
     .input("id", sql.BigInt, id)
+    .input("likedUserId", sql.BigInt, userId)
     .execute("GetCommentById");
 
   if (result.recordset.length > 0) {

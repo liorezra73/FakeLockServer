@@ -13,6 +13,8 @@ const userLikedComment = async (userId, commentId) => {
 };
 
 const addLikeToComment = async (userId, commentId) => {
+    console.log(userId, commentId)
+
   const pool = await poolPromise;
   await pool
     .request()
