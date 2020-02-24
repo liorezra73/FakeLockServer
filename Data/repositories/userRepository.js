@@ -38,7 +38,7 @@ const GetUsersByStartsWith = async startsWith => {
   if (result.recordset.length > 0) {
     return result.recordset;
   } else {
-    throw generateError("NoUsersFound", "no users found in database");
+    return [];
   }
 };
 

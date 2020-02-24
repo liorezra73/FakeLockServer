@@ -19,7 +19,7 @@ const createPost = async (newPost, userId, photo) => {
       case "uploadPhotoFailed":
         throw { ...err };
       default:
-        logger.error(err)
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -35,7 +35,7 @@ const getPostById = async (id, userId) => {
       case "PostNotFound":
         throw { ...err };
       default:
-        logger.error(err)
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -52,7 +52,7 @@ const deletePost = async id => {
       case "PostNotFound":
         throw { ...err };
       default:
-        logger.error(err)
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
@@ -68,16 +68,14 @@ const getPosts = async filter => {
     if (result.length > 0) {
       return result;
     } else {
-      throw generateError("PostsNotFound", "there is no posts exists");
+      return [];
     }
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
-      case "PostsNotFound":
-        throw { ...err };
       default:
-        logger.error(err)
+        logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }

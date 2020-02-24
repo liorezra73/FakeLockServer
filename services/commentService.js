@@ -11,18 +11,13 @@ const getCommentsByPostId = async (postId, userId) => {
     if (result.length > 0) {
       return result;
     } else {
-      throw generateError(
-        "CommnetsNotFound",
-        `there is no comments on post ${postId}`
-      );
+      return [];
     }
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
       case "PostNotFound":
-        throw { ...err };
-      case "CommnetsNotFound":
         throw { ...err };
       default:
         logger.error(err);

@@ -20,9 +20,6 @@ router.get("/", async (req, res, next) => {
       case "PostNotFound":
         err.status = 400;
         break;
-      case "CommnetsNotFound":
-        err.status = 404;
-        break;
       default:
         err.status = 500;
         break;

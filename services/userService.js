@@ -38,8 +38,6 @@ const GetUsersByStartsWith = async (startsWith) => {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
-      case "NoUsersFound":
-        throw { ...err };
       default:
         logger.error(err);
         throw generateError("ServerError", "Something went wrong");

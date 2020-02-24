@@ -16,15 +16,11 @@ router.use(authMiddleware);
 
 router.get("/", validator.query(filterModel), async (req, res, next) => {
   try {
-    console.log(req.query)
     const result = await postService.getPosts(req.query);
 
     res.status(200).json(result);
   } catch (err) {
     switch (err.name) {
-      case "PostsNotFound":
-        err.status = 404;
-        break;
       default:
         err.status = 500;
         break;

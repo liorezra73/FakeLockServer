@@ -14,9 +14,6 @@ router.get("/",[authMiddleware,validator.query(startsWith)], async (req, res, ne
     res.status(200).send(result);
   } catch (err) {
     switch (err.name) {
-      case "NoUsersFound":
-        err.status = 404;
-        break;
       default:
         err.status = 500;
         break;
