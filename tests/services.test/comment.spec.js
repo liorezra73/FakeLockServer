@@ -20,7 +20,7 @@ describe("commentService", function() {
   let postId = faker.random.number();
   let userId = faker.random.number();
   const errorMsg = `Post with the id "${postId}" was not found`;
-  const dbErrorMsg = 'there was an error in the database!';
+  const dbErrorMsg = "there was an error in the database!";
   context("get comments by post Id", function() {
     //#region
 
@@ -51,12 +51,14 @@ describe("commentService", function() {
       getPostById.resolves({});
       getCommentsByPostId.resolves([]);
 
-      await commentService.getCommentsByPostId(postId, userId).should.eventually.be.an('array')
+      await commentService
+        .getCommentsByPostId(postId, userId)
+        .should.eventually.be.an("array");
 
       getPostById.should.calledOnce;
       getCommentsByPostId.should.calledOnce;
     });
-    it("should reject with database error", async function() {
+    it("should reject get comments with database error", async function() {
       getPostById.resolves({});
       getCommentsByPostId.rejects();
 
@@ -66,8 +68,9 @@ describe("commentService", function() {
       getCommentsByPostId.should.calledOnce;
     });
   });
-  context('create comment', function(){
-        //#region
+  context("create comment", function() {
+    //#region
+    const comment = {};
     beforeEach(function() {
       getPostById = sinon.stub(postRepository, "getPostById");
       createComment = sinon.stub(commentRepository, "createComment");
@@ -78,8 +81,34 @@ describe("commentService", function() {
       createComment.restore();
     });
     //#endregion
-    it('should reject with post not found', async function(){
-      
-    })
+    it("should reject with post not found", async function() {
+      getPostById.rejects(generateError("PostNotFound", errorMsg));
+
+      await commentService.createComment(comment).should.rejectedWith(errorMsg);
+
+      getPostById.should.calledOnce;
+      createComment.should.not.called;
+    });
+    it("should create comment", async function() {
+      getPostById.resolves([]);
+      createComment.resolves();
+
+      await commentService.createComment(comment).should.not.rejected;
+
+      getPostById.should.calledOnce;
+      createComment.should.calledOnce;
+    });
+    it("should reject create comment with database error", async function() {
+      getPostById.resolves({});
+      createComment.rejects();
+
+      await commentService.createComment(comment).should.rejected;
+
+      getPostById.should.calledOnce;
+      createComment.should.calledOnce;
+    });
+  });
+  context('its should test delete comment func', function(){
+    it('should delete comment')
   })
 });

@@ -36,7 +36,6 @@ const createComment = async (comment, userId, postId) => {
     comment.usersTags = JSON.stringify(comment.usersTags);
     return await commentRepository.createComment(comment);
   } catch (err) {
-    console.log(err);
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
