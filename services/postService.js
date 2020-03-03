@@ -3,6 +3,7 @@ const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const photoService = require("./photoService");
 const logger = require("../logger/logger");
+
 const createPost = async (newPost, userId, photo) => {
   try {
     newPost.userId = userId;
@@ -58,7 +59,6 @@ const deletePost = async id => {
   }
 };
 
-//fixing?
 const getPosts = async filter => {
   try {
     filter.publishers = JSON.stringify(filter.publishers);
