@@ -8,4 +8,5 @@ const encryption = async password => {
 const comparison = async (password, hash) => {
   return await bcrypt.compare(password, hash);
 };
+
 module.exports = { encryption, comparison };
