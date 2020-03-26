@@ -2,8 +2,8 @@
     "server": {
         "connection": {
             "server": "db",
-            "user": "sa",
-            "password": "MyPassword12345",
+            "user": "fakelockuser",
+            "password": "123456",
             "database": "FakeLock",
             "options": {
                 "trustedConnection": true,
