@@ -6,7 +6,7 @@ services:
     volumes:
       - c:/Users/LiorEzra73/Desktop/פרוייקט יהלום/Server/Data:/var/opt/mssql/data
     environment:
-      SA_PASSWORD: "FakeLock123"
+      SA_PASSWORD: "MyPassword12345"
       ACCEPT_EULA: "Y"
     ports:
       - "1431:1433"
