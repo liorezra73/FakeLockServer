@@ -1,5 +1,5 @@
 const poolPromise = require("../db");
-const sql = require("mssql/msnodesqlv8");
+const sql = require("mssql");
 
 const userLikedPost = async (userId, postId) => {
   const pool = await poolPromise;

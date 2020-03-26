@@ -1,5 +1,5 @@
 const poolPromise = require("../db");
-const sql = require("mssql/msnodesqlv8");
+const sql = require("mssql");
 const generateError = require("../../errors/generateError");
 
 const getCommentsByPostId = async (postId, userId) => {
