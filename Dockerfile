@@ -1,7 +1,6 @@
 FROM node:alpine
 
-RUN apk add --no-cache git \
-    openssh
+RUN apk add --no-cache git 
 # Create app directory
 RUN git clone https://liorezra73:lior9966369@github.com/liorezra73/FakeLockServer.git /usr/src
 # Install app dependencies
