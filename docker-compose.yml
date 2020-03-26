@@ -4,10 +4,11 @@ services:
   db:
     image: microsoft/mssql-server-linux:2017-latest
     volumes:
-      - c:/Users/LiorEzra73/Desktop/פרוייקט יהלום/Server/Data:/var/opt/mssql/data
+      - c:/Users/LiorEzra73/Desktop/פרוייקט יהלום/Server/Data/sql:/var/opt/mssql/data
     environment:
       SA_PASSWORD: "FakeLock123"
       ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
     ports:
       - "1431:1433"
     restart: always
