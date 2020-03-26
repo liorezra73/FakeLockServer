@@ -173,7 +173,7 @@ describe("postService", function() {
     it("should delete post", async function() {
       getPostById.resolves({});
       deletePost.resolves();
-      await postService.deletePost(postId);
+      await postService.deletePost(postId).should.not.be.rejected;;
       getPostById.should.calledOnce;
       deletePost.should.calledOnce;
     });
