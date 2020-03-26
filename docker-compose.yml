@@ -12,6 +12,17 @@ services:
     ports:
       - "1431:1433"
     restart: always
+    
+  elasticsearch:
+    image: elasticsearch:7.6.0
+    volumes:
+      - c:/Users/LiorEzra73/Desktop/פרוייקט יהלום/Server/Data/elasticSearch:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      discovery.type: "single-node"
+    restart: always
 
   node:
     build: .
@@ -19,6 +30,14 @@ services:
       - ./web:/usr/src/app
     depends_on:
       - db
+      - elasticsearch
     restart: always
     ports:
       - "3000:3000"
+  kibana:
+    image: kibana:7.6.0
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    restart: always
