@@ -1,5 +1,5 @@
 const config = require("config");
-const sql = require("mssql/msnodesqlv8");
+const sql = require("mssql");
 
 //get connection from configuration
 let dbConfig = config.get("server.connection");

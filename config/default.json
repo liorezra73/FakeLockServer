@@ -1,10 +1,13 @@
 {
     "server": {
         "connection": {
-            "server": "(localdb)\\SqlExpress",
+            "server": "db",
+            "user": "sa",
+            "password": "FakeLock123",
             "database": "FakeLock",
             "options": {
-                "trustedConnection": true
+                "trustedConnection": true,
+                "enableArithAbort": true
             }
         }
     },
