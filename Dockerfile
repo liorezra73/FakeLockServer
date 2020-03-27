@@ -17,5 +17,5 @@ RUN npm install
 # Bundle app source
 # COPY ./ ./
 # RUN git clone https://github.com/liorezra73/FakeLockServer.git
-EXPOSE 3200
+EXPOSE 3000
 CMD [ "npm", "start" ]

@@ -41,3 +41,10 @@ services:
     depends_on:
       - elasticsearch
     restart: always
+  angular:
+    build: c:/Users/LiorEzra73/Desktop/פרוייקט יהלום/Client/FakeLockClient
+    depends_on:
+      - node
+    restart: always
+    ports:
+      - "4200:4200"
