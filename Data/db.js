@@ -8,7 +8,6 @@ dbConfig = { ...dbConfig };
 dbConfig.options = { ...dbConfig.options };
 
 const poolPromise = new sql.ConnectionPool(dbConfig).connect().catch(err => {
-  console.error(`${err.name}\n${err.message}`);
   process.exit(1);
 });
 
