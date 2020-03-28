@@ -27,7 +27,7 @@ services:
   node:
     image: liorezra73/fakelock_node_server
     volumes:
-      - ./logger/logger.log:/usr/src/FakeLockServer/logger/error.log
+      - ./logger:/usr/src/FakeLockServer/logger
       - ./staticFiles/postsPhotos:/usr/src/staticFiles/postsPhotos
     depends_on:
       - sql
