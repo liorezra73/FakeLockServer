@@ -2,7 +2,13 @@ const winston = require("winston");
 
 const logger = winston.createLogger({
   level: "info",
-  format: winston.format.errors(),
+  format: winston.format.combine(
+    label({ label: 'right meow!' }),
+    timestamp(),
+    prettyPrint(),
+    json(),
+    
+  ),
   defaultMeta: { service: "user-service" },
   transports: [
     new winston.transports.File({
