@@ -14,5 +14,6 @@
     "jwtPrivateKey": "jwtPrivateKey",
     "headerKey": "x-auth-token",
     "port": 3000,
-    "photoPath": "C:\\Users\\LiorEzra73\\Desktop\\פרוייקט יהלום\\Server\\staticFiles\\postsPhotos"
+    "photoPath": "C:\\Users\\LiorEzra73\\Desktop\\פרוייקט יהלום\\Server\\staticFiles\\postsPhotos",
+    "elasticNode": "http://localhost:9200"
 }
