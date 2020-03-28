@@ -12,6 +12,7 @@ const postLikeRoute = require("./controllers/postLikeController");
 const photoRoute = require("./controllers/photoController");
 const commentLikeRoute = require("./controllers/commentLikeController");
 const elasticClient = require("./Data/elasticSearch");
+elasticClient();
 
 const app = express();
 
