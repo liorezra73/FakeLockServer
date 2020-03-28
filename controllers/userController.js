@@ -24,6 +24,7 @@ router.get("/",[authMiddleware,validator.query(startsWith)], async (req, res, ne
 
 router.post("/", validator.body(userModel), async (req, res, next) => {
   try {
+    console.log(`controller:${req.body}`)
     const result = await userService.createUser(req.body);
     res
       .header(config.get("headerKey"), result)

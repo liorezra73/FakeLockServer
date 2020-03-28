@@ -7,6 +7,7 @@ const passwordService = require("./passwordService");
 
 const createUser = async newUser => {
   try {
+    console.log(`service:${newUser}`)
     const isExisting = await userRepository.isUsernameExist(newUser.username);
     if (isExisting) {
       throw generateError(
@@ -19,6 +20,7 @@ const createUser = async newUser => {
     const res = await userRepository.createUser(newUser);
     return res;
   } catch (err) {
+    console.log(`err:${err}`)
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
