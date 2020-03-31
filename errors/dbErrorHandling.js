@@ -11,7 +11,7 @@ const dbErrors = [
 const dbErrorHandling = err => {
   dbErrors.forEach(error => {
     if (err.name === error) {
-      logger.error(err);
+      logger.error();
       return generateError("DbError", "there was an error in the database!");
     }
   });

@@ -1,5 +1,4 @@
 const userRepository = require("../Data/repositories/userRepository");
-const tokenService = require("./tokenService");
 const generateError = require("../errors/generateError");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const logger = require("../logger/logger");
@@ -7,7 +6,6 @@ const passwordService = require("./passwordService");
 
 const createUser = async newUser => {
   try {
-    console.log(`service:${newUser}`)
     const isExisting = await userRepository.isUsernameExist(newUser.username);
     if (isExisting) {
       throw generateError(
@@ -20,7 +18,6 @@ const createUser = async newUser => {
     const res = await userRepository.createUser(newUser);
     return res;
   } catch (err) {
-    console.log(`err:${err}`)
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {

@@ -9,7 +9,6 @@ const startsWith= require("../Shared/models/startsWith")
 
 router.get("/",[authMiddleware,validator.query(startsWith)], async (req, res, next) => {
   try {
-    console.log(req.query)
     const result = await userService.GetUsersByStartsWith(req.query.username);
     res.status(200).send(result);
   } catch (err) {
@@ -24,7 +23,6 @@ router.get("/",[authMiddleware,validator.query(startsWith)], async (req, res, ne
 
 router.post("/", validator.body(userModel), async (req, res, next) => {
   try {
-    console.log(`controller:${req.body}`)
     const result = await userService.createUser(req.body);
     res
       .header(config.get("headerKey"), result)

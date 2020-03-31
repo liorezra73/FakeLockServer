@@ -24,21 +24,6 @@ services:
       discovery.type: "single-node"
     restart: always
 
-  node:
-    image: liorezra73/fakelock_node_server
-    volumes:
-      - ./logger:/usr/src/logger
-      - ./staticFiles/postsPhotos:/usr/src/staticFiles/postsPhotos
-    depends_on:
-      - sql
-      - elasticsearch
-    links: 
-      - sql
-      - elasticsearch
-    restart: always
-    ports:
-      - "3000:3000"
-
   kibana:
     image: kibana:7.6.0
     ports:
@@ -48,12 +33,85 @@ services:
     links:
       - elasticsearch
     restart: always
+
+  node:
+    image: liorezra73/fakelock_node_server
+    volumes:
+      - ./logger:/usr/src/logger
+      - ./staticFiles/postsPhotos:/usr/src/staticFiles/postsPhotos
+    depends_on:
+      - sql
+      - elasticsearch
+    links:
+      - sql
+      - elasticsearch
+    restart: always
+    ports:
+      - "3000:3000"
+
   angular:
     image: liorezra73/fakelock_angular_client
     depends_on:
       - node
-    links: 
+    links:
       - node
     restart: always
     ports:
       - "4200:4200"
+  
+  # node:
+  #   image: liorezra73/fakelock_node_server
+  #   volumes:
+  #     - ./logger:/usr/src/logger
+  #     - ./staticFiles/postsPhotos:/usr/src/staticFiles/postsPhotos
+  #   depends_on:
+  #     - sql
+  #     - elasticsearch
+  #   links:
+  #     - sql
+  #     - elasticsearch
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+
+  node:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /usr/src/node_modules
+      - .:/usr/src
+    depends_on:
+      - sql
+      - elasticsearch
+    links:
+      - sql
+      - elasticsearch
+    restart: always
+    ports:
+      - "3000:3000"
+
+  # angular:
+  #   image: liorezra73/fakelock_angular_client
+  #   depends_on:
+  #     - node
+  #   links:
+  #     - node
+  #   restart: always
+  #   ports:
+  #     - "4200:4200"
+
+  angular:
+    build: 
+      context: c:\Users\LiorEzra73\Desktop\פרוייקט יהלום\Client\FakeLockClient
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - node
+    links:
+      - node
+    restart: always
+    ports:
+      - "4200:4200"
+    volumes:
+      - /usr/src/app/node_modules
+      - c:\Users\LiorEzra73\Desktop\פרוייקט יהלום\Client\FakeLockClient:/usr/src/app
