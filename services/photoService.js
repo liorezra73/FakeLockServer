@@ -5,6 +5,7 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 const photoPath = config.get("photoPath");
 const generateError = require("../errors/generateError");
+const logger = require("../logger/logger");
 
 const uploadPhoto = async photo => {
   try {
@@ -25,6 +26,7 @@ const uploadPhoto = async photo => {
       .toFile(`${photoPath}/${id}.small.webp`);
     return id;
   } catch (err) {
+    logger.error(err);
     throw generateError("uploadPhotoFailed", "failed to upload photo");
   }
 };
@@ -39,6 +41,7 @@ const extractPhoto = async name => {
     });
     return readStream;
   } catch (err) {
+    logger.error(err);
     throw generateError("extractPhotoFailed", "failed to extract photo");
   }
 };

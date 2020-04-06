@@ -2,14 +2,24 @@ const postRepository = require("../Data/repositories/postRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const photoService = require("./photoService");
+const userRepository = require("../Data/repositories/userRepository");
 const logger = require("../logger/logger");
 
 const createPost = async (newPost, userId, photo) => {
   try {
-    newPost.userId = userId;
+    const user = await userRepository.getUserById(userId);
+    newPost.user = {
+      userId: userId,
+      username: user.Username
+    };
     newPost.publishDate = new Date();
-    newPost.tags = JSON.stringify(newPost.tags);
-    newPost.usersTags = JSON.stringify(newPost.usersTags);
+    // newPost.tags = JSON.stringify(newPost.tags);
+    const usersTags = await userRepository.getUsersByIds(JSON.stringify(newPost.usersTags));
+    newPost.usersTags = []
+    usersTags.forEach(user=>{
+      newPost.usersTags.push({user_id:user.Id,username:user.Username})
+    })
+    
     newPost.photo = await photoService.uploadPhoto(photo);
     const result = await postRepository.createPost(newPost);
     return result;
@@ -20,14 +30,16 @@ const createPost = async (newPost, userId, photo) => {
       case "uploadPhotoFailed":
         throw { ...err };
       default:
+        console.log(err)
         logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
 };
-const getPostById = async (id, userId) => {
+
+const getPostById = async (id) => {
   try {
-    const result = await postRepository.getPostById(id, userId);
+    const result = await postRepository.getPostById(id);
     return result;
   } catch (err) {
     const dbError = dbErrorHandling(err);

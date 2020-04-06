@@ -29,29 +29,22 @@ router.get("/", validator.query(filterModel), async (req, res, next) => {
   }
 });
 
-router.get(
-  "/:postId",
-  [validator.params(idModels.post)],
-  async (req, res, next) => {
-    try {
-      const result = await postService.getPostById(
-        req.params.postId,
-        req.user.id
-      );
-      res.status(200).send(result);
-    } catch (err) {
-      switch (err.name) {
-        case "PostNotFound":
-          err.status = 404;
-          break;
-        default:
-          err.status = 500;
-          break;
-      }
-      next(err);
+router.get("/:postId", async (req, res, next) => {
+  try {
+    const result = await postService.getPostById(req.params.postId);
+    res.status(200).send(result);
+  } catch (err) {
+    switch (err.name) {
+      case "PostNotFound":
+        err.status = 404;
+        break;
+      default:
+        err.status = 500;
+        break;
     }
+    next(err);
   }
-);
+});
 
 router.delete(
   "/:postId",

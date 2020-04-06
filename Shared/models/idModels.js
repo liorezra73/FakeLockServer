@@ -17,7 +17,7 @@ const comment = Joi.object({
 
 module.exports = {
   post,
-  comment,
+  comment
   // postLike,
   // commentLike
 };

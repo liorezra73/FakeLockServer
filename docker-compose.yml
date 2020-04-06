@@ -1,3 +1,4 @@
+#run- docker-compose --project-name fakelock up
 version: "3.7"
 
 services:
@@ -34,36 +35,11 @@ services:
       - elasticsearch
     restart: always
 
-  node:
-    image: liorezra73/fakelock_node_server
-    volumes:
-      - ./logger:/usr/src/logger
-      - ./staticFiles/postsPhotos:/usr/src/staticFiles/postsPhotos
-    depends_on:
-      - sql
-      - elasticsearch
-    links:
-      - sql
-      - elasticsearch
-    restart: always
-    ports:
-      - "3000:3000"
-
-  angular:
-    image: liorezra73/fakelock_angular_client
-    depends_on:
-      - node
-    links:
-      - node
-    restart: always
-    ports:
-      - "4200:4200"
-  
   # node:
   #   image: liorezra73/fakelock_node_server
   #   volumes:
-  #     - ./logger:/usr/src/logger
-  #     - ./staticFiles/postsPhotos:/usr/src/staticFiles/postsPhotos
+  #     - /usr/src/node_modules
+  #     - .:/usr/src
   #   depends_on:
   #     - sql
   #     - elasticsearch
@@ -100,6 +76,9 @@ services:
   #   restart: always
   #   ports:
   #     - "4200:4200"
+  #   volumes:
+  #     - /usr/src/app/node_modules
+  #     - c:\Users\LiorEzra73\Desktop\פרוייקט יהלום\Client\FakeLockClient:/usr/src/app
 
   angular:
     build: 

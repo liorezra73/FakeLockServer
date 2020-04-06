@@ -11,6 +11,15 @@ const getUserById = async id => {
   return user.recordset[0];
 };
 
+const getUsersByIds = async ids =>{
+  const pool = await poolPromise;
+  const user = await pool
+    .request()
+    .input("ids", sql.NVarChar, ids)
+    .execute("GetUsersByIds");
+  return user.recordset;
+}
+
 const isUsernameExist = async username => {
   const pool = await poolPromise;
   const user = await pool
@@ -85,5 +94,6 @@ module.exports = {
   updateUser,
   changeUserPassword,
   isUsernameExist,
-  getUserByUsername
+  getUserByUsername,
+  getUsersByIds
 };
