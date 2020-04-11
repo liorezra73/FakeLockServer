@@ -1,4 +1,4 @@
-const commentLikeRepository = require("../Data/repositories/commentsLikeRepository");
+const likeRepository = require("../Data/repositories/likeRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
 const logger = require("../logger/logger");
@@ -6,24 +6,19 @@ const commentRepository = require("../Data/repositories/commentRepository");
 
 const doLike = async (userId, commentId) => {
   try {
-    await commentRepository.getCommentById(commentId,userId);
-    const didLike = await commentLikeRepository.userLikedComment(
-      userId,
-      commentId
-    );
-    if (didLike) {
+    const exists = await commentRepository.commentExists(commentId);
+    if (!exists) {
       throw generateError(
-        "LikeExists",
-        `user ${userId} already liked post ${commentId}`
+        "CommentNotFound",
+        `comment with id ${commentId} does not exist`
       );
     }
-    await commentLikeRepository.addLikeToComment(userId, commentId);
+
+    await likeRepository.addLike(userId, commentId);
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
-      case "LikeExists":
-        throw { ...err };
       case "CommentNotFound":
         throw { ...err };
       default:
@@ -35,24 +30,18 @@ const doLike = async (userId, commentId) => {
 
 const unLike = async (userId, commentId) => {
   try {
-    await commentRepository.getCommentById(commentId,userId);
-    const didLike = await commentLikeRepository.userLikedComment(
-      userId,
-      commentId
-    );
-    if (!didLike) {
+    const exists = await commentRepository.commentExists(commentId);
+    if (!exists) {
       throw generateError(
-        "LikeNotExists",
-        `user ${userId} not liked post ${commentId}`
+        "CommentNotFound",
+        `comment with id ${commentId} does not exist`
       );
     }
-    await commentLikeRepository.unLikeToComment(userId, commentId);
+    await likeRepository.unLike(userId, commentId);
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
-      case "LikeNotExists":
-        throw { ...err };
       case "CommentNotFound":
         throw { ...err };
       default:

@@ -1,4 +1,4 @@
-const postLikeRepository = require("../Data/repositories/postLikeRepository");
+const likeRepository = require("../Data/repositories/likeRepository");
 const postRepository = require("../Data/repositories/postRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
@@ -6,21 +6,16 @@ const logger = require("../logger/logger");
 
 const doLike = async (userId, postId) => {
   try {
-    const post =  await postRepository.postExists(postId);
-    const didLike = await postLikeRepository.userLikedPost(userId, postId);
-    if (didLike) {
-      throw generateError(
-        "LikeExists",
-        `user ${userId} already liked post ${postId}`
-      );
+    console.log("service like");
+    const postExists = await postRepository.postExists(postId);
+    if (!postExists) {
+      throw generateError("PostNotFound", `post with id ${postId} not found`);
     }
-    await postLikeRepository.addLikeToPost(userId, postId);
+    await likeRepository.addLike(userId, postId);
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
-      case "LikeExists":
-        throw { ...err };
       case "PostNotFound":
         throw { ...err };
       default:
@@ -32,21 +27,16 @@ const doLike = async (userId, postId) => {
 
 const unLike = async (userId, postId) => {
   try {
-    await postRepository.getPostById(postId);
-    const didLike = await postLikeRepository.userLikedPost(userId, postId);
-    if (!didLike) {
-      throw generateError(
-        "LikeNotExists",
-        `user ${userId} not liked post ${postId}`
-      );
+    console.log("service unlike");
+    const postExists = await postRepository.postExists(postId);
+    if (!postExists) {
+      throw generateError("PostNotFound", `post with id ${postId} not found`);
     }
-    await postLikeRepository.unLikeToPost(userId, postId);
+    await likeRepository.unLike(userId, postId);
   } catch (err) {
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
-      case "LikeNotExists":
-        throw { ...err };
       case "PostNotFound":
         throw { ...err };
       default:
@@ -58,5 +48,5 @@ const unLike = async (userId, postId) => {
 
 module.exports = {
   doLike,
-  unLike
+  unLike,
 };

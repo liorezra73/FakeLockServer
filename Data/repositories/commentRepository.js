@@ -193,9 +193,19 @@ const deleteComment = async (id) => {
   await pool.request().input("id", sql.BigInt, id).execute("DeleteComment");
 };
 
+const commentExists = async (id) => {
+  const query = await elsaticClient.get({
+    index: "fakelock",
+    id: id,
+    _source: false,
+  });
+  return query.body.found;
+};
+
 module.exports = {
   getCommentsByPostId,
   createComment,
   deleteComment,
   getCommentById,
+  commentExists,
 };

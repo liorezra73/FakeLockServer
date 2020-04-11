@@ -2,10 +2,7 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const authMiddleware = require("../middleware/authMiddleware");
 const postLikeService = require("../services/postLikeService");
-const validator = require("express-joi-validation").createValidator({});
-const idModels = require("../Shared/models/idModels");
 router.use(authMiddleware);
-router.use(validator.params(idModels.post));
 
 router.post("/", async (req, res, next) => {
   try {
@@ -13,9 +10,6 @@ router.post("/", async (req, res, next) => {
     res.status(201).send({ ok: true });
   } catch (err) {
     switch (err.name) {
-      case "LikeExists":
-        err.status = 400;
-        break;
       case "PostNotFound":
         err.status = 404;
         break;
@@ -34,9 +28,6 @@ router.delete("/", async (req, res, next) => {
     res.status(200).send({ ok: true });
   } catch (err) {
     switch (err.name) {
-      case "LikeNotExists":
-        err.status = 400;
-        break;
       case "PostNotFound":
         err.status = 404;
         break;
