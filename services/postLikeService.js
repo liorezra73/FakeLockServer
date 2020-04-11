@@ -6,7 +6,7 @@ const logger = require("../logger/logger");
 
 const doLike = async (userId, postId) => {
   try {
-    await postRepository.getPostById(postId);
+    const post =  await postRepository.postExists(postId);
     const didLike = await postLikeRepository.userLikedPost(userId, postId);
     if (didLike) {
       throw generateError(
