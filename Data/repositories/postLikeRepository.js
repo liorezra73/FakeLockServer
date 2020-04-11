@@ -1,5 +1,6 @@
 const poolPromise = require("../db");
 const sql = require("mssql");
+const elsaticClient = require("../elasticSearch");
 
 const userLikedPost = async (userId, postId) => {
   const pool = await poolPromise;
@@ -13,6 +14,7 @@ const userLikedPost = async (userId, postId) => {
 };
 
 const addLikeToPost = async (userId, postId) => {
+  
   const pool = await poolPromise;
   await pool
     .request()

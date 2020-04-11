@@ -4,15 +4,16 @@ const authMiddleware = require("../middleware/authMiddleware");
 const commentService = require("../services/commentService");
 const commentModel = require("../Shared/models/comment");
 const validator = require("express-joi-validation").createValidator({});
+const commentsQuery = require("../Shared/models/commentsQuery");
 const idModels = require("../Shared/models/idModels");
 router.use(authMiddleware);
-router.use(validator.params(idModels.post));
 
-router.get("/", async (req, res, next) => {
+router.get("/",validator.query(commentsQuery), async (req, res, next) => {
   try {
     const result = await commentService.getCommentsByPostId(
       req.params.postId,
-      req.user.id
+      req.user.id,
+      req.query
     );
     res.status(200).send(result);
   } catch (err) {

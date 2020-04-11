@@ -1,6 +1,5 @@
 const poolPromise = require("../db");
 const sql = require("mssql");
-const generateError = require("../../errors/generateError");
 
 const getUserById = async id => {
   const pool = await poolPromise;

@@ -1,6 +1,5 @@
-const poolPromise = require("../db");
-const sql = require("mssql");
-const generateError = require("../../errors/generateError");
+// const poolPromise = require("../db");
+// const sql = require("mssql");
 const elsaticClient = require("../elasticSearch");
 
 const createPost = async (newPost) => {
@@ -21,19 +20,31 @@ const createPost = async (newPost) => {
       },
       likes: [],
       users_tags: newPost.usersTags,
+      type: {
+        name: "post",
+      },
     },
   });
   return query.body._id;
 };
 
-const getPostById = async (id) => {
+const postExists = async (id) => {
+  const query = await elsaticClient.get({
+    index: "fakelock",
+    id: id,
+    _source: false,
+  });
+  return query.body.found;
+};
+
+const getPostById = async (id, userId) => {
   const query = await elsaticClient.search({
     index: "fakelock",
     body: {
       _source: [
-        "text",
         "location",
         "photo",
+        "text",
         "publish_date",
         "tags",
         "users_tags",
@@ -44,9 +55,11 @@ const getPostById = async (id) => {
           script: {
             source: "params?._source?.likes?.length",
           },
+        },
+        user_liked: {
           script: {
-            source: "params?._source?.likes?.length",
-          }
+            source: `params?._source?.likes.contains(${userId})`,
+          },
         },
       },
       query: {
@@ -77,92 +90,209 @@ const getPostById = async (id) => {
     },
   });
   const res = query.body.hits.hits[0];
-  console.log(res.fields)
   const post = {
-    photo:res._source.photo,
+    text: res._source.text,
+    publishDate: res._source.publish_date,
+    photo: res._source.photo,
     user: res._source.user,
-    tags: res._source.tags,
+    tags:
+      typeof res._source.tags === "string"
+        ? [res._source.tags]
+        : res._source.tags,
     usersTags: res._source.users_tags,
     likes: res.fields.likes[0],
     commentsCount: res.inner_hits.comment.hits.total.value,
     id: res._id,
-    isLikedByUser: false
+    isLikedByUser: res.fields.user_liked[0],
   };
   post.Location = {
     latitude: res._source.location.lat,
-    longtitude: res._source.location.lon
+    longtitude: res._source.location.lon,
   };
   return post;
 };
 
-
-// {
-//   node_1           |     _index: 'fakelock',
-//   node_1           |     _type: '_doc',
-//   node_1           |     _id: 'AlZJUHEB_wzYOa0ErjE6',
-//   node_1           |     _score: 1,
-//   node_1           |     _source: {
-//   node_1           |       photo: 'be39d539-b2f2-4f94-a6eb-d2164625ef51',
-//   node_1           |       users_tags: [Array],
-//   node_1           |       location: [Object],
-//   node_1           |       text: 'bob',
-//   node_1           |       user: [Object],
-//   node_1           |       publish_date: '2020-04-06T16:18:58.121Z',
-//   node_1           |       tags: [Array]
-//   node_1           |     },
-//   node_1           |     fields: { likes: [Array] },
-//   node_1           |     inner_hits: { comment: [Object] }
-//   node_1           |   }
-
-
 const getPosts = async (filter) => {
-  const pool = await poolPromise;
-  const result = await pool
-    .request()
-    .input(
-      "publishers",
-      sql.NVarChar,
-      filter.publishers ? filter.publishers : null
-    )
-    .input(
-      "startDate",
-      sql.DateTime,
-      filter.startDate ? filter.startDate : null
-    )
-    .input("endDate", sql.DateTime, filter.endDate ? filter.endDate : null)
-    .input("positionLat", sql.Float, filter.latitude ? filter.latitude : null)
-    .input(
-      "positionLong",
-      sql.Float,
-      filter.longtitude ? filter.longtitude : null
-    )
-    .input("distance", sql.Float, filter.distance ? filter.distance : null)
-    .input("tagsJson", sql.NVarChar, filter.tags ? filter.tags : null)
-    .input("userTags", sql.NVarChar, filter.usersTags ? filter.usersTags : null)
-    .input("orderBy", sql.VarChar, filter.orderBy)
-    .execute("FilterPosts");
-  result.recordsets[0].forEach((post) => {
-    post.location = {
-      latitude: post.location.points[0].x,
-      longtitude: post.location.points[0].y,
-    };
+  const q = {
+    from: 0,
+    size: filter.size,
+    script_fields: {
+      likes: {
+        script: {
+          source: "params?._source?.likes?.length",
+        },
+      },
+    },
+    _source: ["location", "photo", "publish_date"],
+    query: {
+      bool: {
+        must_not: [
+          {
+            exists: {
+              field: "_routing",
+            },
+          },
+        ],
+        filter: [
+          {
+            range: {
+              publish_date: {
+                gte: filter.startDate ? filter.startDate : null,
+                lte: filter.endDate ? filter.endDate : null,
+              },
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  if (filter.searchAfterScore && filter.searchAfterId) {
+    q.search_after = [filter.searchAfterScore, filter.searchAfterId];
+  }
+
+  switch (filter.orderBy) {
+    case "likes":
+      q.sort = [
+        {
+          _script: {
+            script: "params._source?.likes?.length ?: 0",
+            order: "desc",
+            type: "number",
+          },
+        },
+        {
+          _id: { order: "asc" },
+        },
+      ];
+      break;
+    default:
+      q.sort = [
+        {
+          publish_date: {
+            order: "desc",
+          },
+        },
+        {
+          _id: { order: "asc" },
+        },
+      ];
+      break;
+  }
+
+  if (filter.publishers) {
+    q.query.bool.filter.push({
+      nested: {
+        path: "user",
+        query: {
+          terms: {
+            "user.user_id": filter.publishers,
+          },
+        },
+      },
+    });
+  }
+
+  if (filter.usersTags) {
+    q.query.bool.filter.push({
+      bool: {
+        minimum_should_match: 1,
+        should: [
+          {
+            nested: {
+              path: "users_tags",
+              query: {
+                terms: {
+                  "users_tags.user_id": filter.usersTags,
+                },
+              },
+            },
+          },
+          {
+            has_child: {
+              type: "comment",
+              query: {
+                terms: {
+                  "users_tags.user_id": filter.usersTags,
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  if (filter.tags) {
+    q.query.bool.should = [
+      {
+        has_child: {
+          type: "comment",
+          query: {
+            match: {
+              tags: filter.tags,
+            },
+          },
+        },
+      },
+      {
+        match: {
+          tags: filter.tags,
+        },
+      },
+    ];
+    q.query.bool.minimum_should_match = 1;
+  }
+  if (filter.latitude && filter.longtitude && filter.distance) {
+    q.query.bool.filter.push({
+      geo_distance: {
+        distance: `${filter.distance}km`,
+        location: {
+          lat: filter.latitude,
+          lon: filter.longtitude,
+        },
+      },
+    });
+  }
+
+  const query = await elsaticClient.search({
+    index: "fakelock",
+    body: q,
   });
+  
+  const posts = [];
+  if (query.body.hits.hits.length > 0) {
+    query.body.hits.hits.forEach((p) =>
+      posts.push({
+        postId: p._id,
+        photo: p._source.photo,
+        location: {
+          latitude: p._source.location.lat,
+          longtitude: p._source.location.lon,
+        },
+        publishDate: p._source.publish_date,
+        likes: p.fields.likes[0],
+      })
+    );
+  }
+  const lastHit = query.body.hits.hits[query.body.hits.hits.length - 1];
+  if (lastHit && lastHit.sort) {
+    const sort = lastHit.sort;
+    posts[posts.length - 1].searchAfter = {
+      score: sort[0],
+      id: sort[1],
+    };
+  }
 
-  return result.recordsets[0];
+  return posts;
 };
 
-const deletePost = async (id) => {
-  const pool = await poolPromise;
-  const postId = await pool
-    .request()
-    .input("id", sql.BigInt, id)
-    .execute("DeletePost");
-  return postId;
-};
+const deletePost = async (id) => {};
 
 module.exports = {
   getPostById,
   createPost,
   getPosts,
   deletePost,
+  postExists,
 };

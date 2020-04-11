@@ -7,20 +7,21 @@ const logger = require("../logger/logger");
 
 const createPost = async (newPost, userId, photo) => {
   try {
+    newPost.photo = await photoService.uploadPhoto(photo);
     const user = await userRepository.getUserById(userId);
     newPost.user = {
       userId: userId,
-      username: user.Username
+      username: user.Username,
     };
     newPost.publishDate = new Date();
-    // newPost.tags = JSON.stringify(newPost.tags);
-    const usersTags = await userRepository.getUsersByIds(JSON.stringify(newPost.usersTags));
-    newPost.usersTags = []
-    usersTags.forEach(user=>{
-      newPost.usersTags.push({user_id:user.Id,username:user.Username})
-    })
-    
-    newPost.photo = await photoService.uploadPhoto(photo);
+    const usersTags = await userRepository.getUsersByIds(
+      JSON.stringify(newPost.usersTags)
+    );
+    newPost.usersTags = [];
+    usersTags.forEach((user) => {
+      newPost.usersTags.push({ user_id: user.Id, username: user.Username });
+    });
+
     const result = await postRepository.createPost(newPost);
     return result;
   } catch (err) {
@@ -30,16 +31,15 @@ const createPost = async (newPost, userId, photo) => {
       case "uploadPhotoFailed":
         throw { ...err };
       default:
-        console.log(err)
         logger.error(err);
         throw generateError("ServerError", "Something went wrong");
     }
   }
 };
 
-const getPostById = async (id) => {
+const getPostById = async (id, userId) => {
   try {
-    const result = await postRepository.getPostById(id);
+    const result = await postRepository.getPostById(id, userId);
     return result;
   } catch (err) {
     const dbError = dbErrorHandling(err);
@@ -54,7 +54,7 @@ const getPostById = async (id) => {
   }
 };
 
-const deletePost = async id => {
+const deletePost = async (id) => {
   try {
     const existPost = await getPostById(id);
     await postRepository.deletePost(existPost.Id);
@@ -71,11 +71,11 @@ const deletePost = async id => {
   }
 };
 
-const getPosts = async filter => {
+const getPosts = async (filter) => {
   try {
-    filter.publishers = JSON.stringify(filter.publishers);
-    filter.tags = JSON.stringify(filter.tags);
-    filter.usersTags = JSON.stringify(filter.usersTags);
+    if (filter.tags) {
+      filter.tags = filter.tags.join(" ");
+    }
     const result = await postRepository.getPosts(filter);
     if (result.length > 0) {
       return result;
@@ -97,5 +97,5 @@ module.exports = {
   createPost,
   getPostById,
   deletePost,
-  getPosts
+  getPosts,
 };

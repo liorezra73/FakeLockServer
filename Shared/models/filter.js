@@ -1,17 +1,14 @@
 const Joi = require("@hapi/joi");
 
 const filter = Joi.object({
+  size: Joi.number().integer().min(1).required(),
+  searchAfterScore: Joi.number(),
+  searchAfterId: Joi.string(),
   publishers: Joi.array().items(Joi.number()),
 
-  latitude: Joi.number()
-    .min(-90)
-    .max(90),
-  longtitude: Joi.number()
-    .min(-180)
-    .max(180),
-  distance: Joi.number()
-    .min(0)
-    .max(19000000),
+  latitude: Joi.number().min(-90).max(90),
+  longtitude: Joi.number().min(-180).max(180),
+  distance: Joi.number().min(0).max(19000000),
 
   tags: Joi.array().items(Joi.string()),
 
@@ -21,10 +18,12 @@ const filter = Joi.object({
     .max("now")
     .when("endDate", {
       is: Joi.exist(),
-      then: Joi.date().less(Joi.ref("endDate"))
+      then: Joi.date().less(Joi.ref("endDate")),
     }),
   endDate: Joi.date().max("now"),
-  orderBy: Joi.string().valid("likes","date").required()
-}).and("distance", "latitude", "longtitude");
+  orderBy: Joi.string().valid("likes", "date").required(),
+})
+  .and("distance", "latitude", "longtitude")
+  .and("searchAfterScore", "searchAfterId");
 
 module.exports = filter;

@@ -31,7 +31,7 @@ router.get("/", validator.query(filterModel), async (req, res, next) => {
 
 router.get("/:postId", async (req, res, next) => {
   try {
-    const result = await postService.getPostById(req.params.postId);
+    const result = await postService.getPostById(req.params.postId,req.user.id);
     res.status(200).send(result);
   } catch (err) {
     switch (err.name) {
@@ -77,7 +77,7 @@ router.post(
         req.user.id,
         req.file
       );
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (err) {
       console.log(err);
 
