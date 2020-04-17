@@ -145,7 +145,25 @@ const createComment = async (comment) => {
   comment.likes = 0;
   comment.userLiked = false;
   comment.user.userId = parseInt(comment.user.userId);
-  return comment;
+
+  const commentsCount = await elsaticClient.count({
+    routing: comment.postId,
+    index: "fakelock",
+    body: {
+      query: {
+        bool: {
+          must: [
+            {
+              term: {
+                _routing: comment.postId,
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+  return { comment: comment, count: commentsCount.body.count + 1 };
 };
 
 const getCommentById = async (id) => {

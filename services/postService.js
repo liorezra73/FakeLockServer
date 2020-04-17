@@ -1,5 +1,6 @@
 const postRepository = require("../Data/repositories/postRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
+const elasticSearchErrorHandling = require("../errors/elasticSearchErrorHandling");
 const generateError = require("../errors/generateError");
 const photoService = require("./photoService");
 const userRepository = require("../Data/repositories/userRepository");
@@ -25,6 +26,8 @@ const createPost = async (newPost, userId, photo) => {
     const result = await postRepository.createPost(newPost);
     return result;
   } catch (err) {
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -42,6 +45,8 @@ const getPostById = async (id, userId) => {
     const result = await postRepository.getPostById(id, userId);
     return result;
   } catch (err) {
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -59,6 +64,8 @@ const deletePost = async (id) => {
     const existPost = await getPostById(id);
     await postRepository.deletePost(existPost.Id);
   } catch (err) {
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -83,6 +90,8 @@ const getPosts = async (filter) => {
       return [];
     }
   } catch (err) {
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {

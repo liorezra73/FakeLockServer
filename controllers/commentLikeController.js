@@ -4,11 +4,15 @@ const authMiddleware = require("../middleware/authMiddleware");
 const commentLikeService = require("../services/commentLikeService");
 const validator = require("express-joi-validation").createValidator({});
 const idModels = require("../Shared/models/idModels");
+const socketService = require("../services/socketService");
+
 router.use(authMiddleware);
 
 router.post("/", async (req, res, next) => {
   try {
-    await commentLikeService.doLike(req.user.id, req.params.commentId);
+    const {io}=req;
+    const likes = await commentLikeService.doLike(req.user.id, req.params.commentId,io);
+    socketService.onSocket(io,likes,"commentLike","commentLikes")
     res.status(201).send({ ok: true });
   } catch (err) {
     switch (err.name) {
@@ -25,7 +29,9 @@ router.post("/", async (req, res, next) => {
 
 router.delete("/", async (req, res, next) => {
   try {
-    await commentLikeService.unLike(req.user.id, req.params.commentId);
+    const {io}=req;
+    const likes = await commentLikeService.unLike(req.user.id, req.params.commentId,io);
+    socketService.onSocket(io,likes,"commentUnLike","commentLikes")
     res.status(201).send({ ok: true });
   } catch (err) {
     switch (err.name) {

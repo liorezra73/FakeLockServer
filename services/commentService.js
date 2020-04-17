@@ -1,6 +1,7 @@
 const commentRepository = require("../Data/repositories/commentRepository");
 const dbErrorHandling = require("../errors/dbErrorHandling");
 const generateError = require("../errors/generateError");
+const elasticSearchErrorHandling = require("../errors/elasticSearchErrorHandling");
 const postRepository = require("../Data/repositories/postRepository");
 const userRepository = require("../Data/repositories/userRepository");
 const logger = require("../logger/logger");
@@ -23,6 +24,8 @@ const getCommentsByPostId = async (postId, userId, commentsQuery) => {
       throw generateError("PostNotFound", "post not found");
     }
   } catch (err) {
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -59,7 +62,8 @@ const createComment = async (comment, userId, postId) => {
 
     return await commentRepository.createComment(comment);
   } catch (err) {
-    console.log(err);
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {
@@ -77,6 +81,8 @@ const deleteComment = async (postId, commentId) => {
     const existComment = await commentRepository.getCommentById(commentId);
     await commentRepository.deleteComment(existComment.Id);
   } catch (err) {
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     const dbError = dbErrorHandling(err);
     if (dbError) throw dbError;
     switch (err.name) {

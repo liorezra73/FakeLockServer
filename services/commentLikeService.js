@@ -1,5 +1,5 @@
 const likeRepository = require("../Data/repositories/likeRepository");
-const dbErrorHandling = require("../errors/dbErrorHandling");
+const elasticSearchErrorHandling = require("../errors/elasticSearchErrorHandling");
 const generateError = require("../errors/generateError");
 const logger = require("../logger/logger");
 const commentRepository = require("../Data/repositories/commentRepository");
@@ -16,8 +16,8 @@ const doLike = async (userId, commentId) => {
 
     await likeRepository.addLike(userId, commentId);
   } catch (err) {
-    const dbError = dbErrorHandling(err);
-    if (dbError) throw dbError;
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     switch (err.name) {
       case "CommentNotFound":
         throw { ...err };
@@ -39,8 +39,8 @@ const unLike = async (userId, commentId) => {
     }
     await likeRepository.unLike(userId, commentId);
   } catch (err) {
-    const dbError = dbErrorHandling(err);
-    if (dbError) throw dbError;
+    const elasticError = elasticSearchErrorHandling(err);
+    if (elasticError) throw elasticError;
     switch (err.name) {
       case "CommentNotFound":
         throw { ...err };

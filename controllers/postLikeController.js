@@ -2,11 +2,14 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const authMiddleware = require("../middleware/authMiddleware");
 const postLikeService = require("../services/postLikeService");
+const socketService = require("../services/socketService");
 router.use(authMiddleware);
 
 router.post("/", async (req, res, next) => {
   try {
-    await postLikeService.doLike(req.user.id, req.params.postId);
+    const { io } = req;
+    const likes = await postLikeService.doLike(req.user.id, req.params.postId);
+    socketService.onSocket(io,likes,"postLike","postLikes")
     res.status(201).send({ ok: true });
   } catch (err) {
     switch (err.name) {
@@ -24,7 +27,9 @@ router.post("/", async (req, res, next) => {
 
 router.delete("/", async (req, res, next) => {
   try {
-    await postLikeService.unLike(req.user.id, req.params.postId);
+    const { io } = req;
+    const likes = await postLikeService.unLike(req.user.id, req.params.postId);
+    socketService.onSocket(io,likes,"postUnLike","postLikes")
     res.status(200).send({ ok: true });
   } catch (err) {
     switch (err.name) {

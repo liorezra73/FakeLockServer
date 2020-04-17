@@ -1,4 +1,4 @@
-#run- docker-compose --project-name fakelock up
+#run- docker-compose --project-name fakelock up --build
 version: "3.7"
 
 services:

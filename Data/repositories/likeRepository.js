@@ -1,9 +1,11 @@
 const elsaticClient = require("../elasticSearch");
 
 const addLike = async (userId, documentId) => {
-  await elsaticClient.update({
+  const res = await elsaticClient.update({
     index: "fakelock",
+    _source_includes: ["likes"],
     id: documentId,
+    refresh: true,
     body: {
       script: {
         lang: "painless",
@@ -17,12 +19,16 @@ const addLike = async (userId, documentId) => {
       },
     },
   });
+  // console.log(x.body.get._source.likes.length);
+  return res.body.get._source.likes.length;
 };
 
 const unLike = async (userId, documentId) => {
-  await elsaticClient.update({
+  const res = await elsaticClient.update({
     index: "fakelock",
+    _source_includes: ["likes"],
     id: documentId,
+    refresh: true,
     body: {
       script: {
         lang: "painless",
@@ -36,6 +42,7 @@ const unLike = async (userId, documentId) => {
       },
     },
   });
+  return res.body.get._source.likes.length;
 };
 
 module.exports = {

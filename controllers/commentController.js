@@ -6,6 +6,7 @@ const commentModel = require("../Shared/models/comment");
 const validator = require("express-joi-validation").createValidator({});
 const commentsQuery = require("../Shared/models/commentsQuery");
 const idModels = require("../Shared/models/idModels");
+const socketService = require("../services/socketService");
 router.use(authMiddleware);
 
 router.get("/",validator.query(commentsQuery), async (req, res, next) => {
@@ -31,12 +32,14 @@ router.get("/",validator.query(commentsQuery), async (req, res, next) => {
 
 router.post("/", validator.body(commentModel), async (req, res, next) => {
   try {
+    const {io}=req;
     const result = await commentService.createComment(
       req.body,
       req.user.id,
       req.params.postId
     );
-    res.status(201).send(result);
+    socketService.onSocket(io,result.count,"comment","comments")
+    res.status(201).send(result.comment);
   } catch (err) {
     switch (err.name) {
       case "PostNotFound":

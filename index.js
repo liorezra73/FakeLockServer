@@ -2,6 +2,7 @@ var express = require("express");
 const config = require("config");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const http = require("http");
 
 //routs/controllers
 const userRoute = require("./controllers/userController");
@@ -12,13 +13,19 @@ const postLikeRoute = require("./controllers/postLikeController");
 const photoRoute = require("./controllers/photoController");
 const commentLikeRoute = require("./controllers/commentLikeController");
 
-
 const app = express();
+const server = http.createServer(app);
+const io = require("socket.io")(server);
+
 
 app.use(
   "/staticFiles/postsPhotos",
   express.static(__dirname + "/staticFiles/postsPhotos")
 );
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -59,6 +66,8 @@ if (!config.get("port")) {
 
 const port = config.get("port");
 //run server
-module.exports.listen = app.listen(port, () => {
+module.exports.server = server.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
+
+module.exports.io = io;
