@@ -196,24 +196,30 @@ const getPosts = async (filter) => {
   if (filter.usersTags) {
     q.query.bool.filter.push({
       bool: {
-        minimum_should_match: 1,
-        should: [
-          {
-            nested: {
-              path: "users_tags",
-              query: {
-                terms: {
-                  "users_tags.user_id": filter.usersTags,
-                },
-              },
-            },
-          },
+        filter: [
           {
             has_child: {
               type: "comment",
               query: {
-                terms: {
-                  "users_tags.user_id": filter.usersTags,
+                bool: {
+                  filter: [
+                    {
+                      nested: {
+                        path: "users_tags",
+                        query: {
+                          bool: {
+                            filter: [
+                              {
+                                terms: {
+                                  "users_tags.user_id": filter.usersTags,
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -259,7 +265,8 @@ const getPosts = async (filter) => {
     index: "fakelock",
     body: q,
   });
-  
+  console.log(query.body);
+
   const posts = [];
   if (query.body.hits.hits.length > 0) {
     query.body.hits.hits.forEach((p) =>
