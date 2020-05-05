@@ -1,5 +1,5 @@
 const generateError = require("./generateError");
-const logger = require("../logger/logger");
+// const logger = require("../logger/logger");
 
 const elasticErrors = [
   "ElasticsearchClientErrors",
@@ -9,16 +9,31 @@ const elasticErrors = [
   "SerializationError",
   "DeserializationError",
   "ConfigurationError",
-  "ResponseError"
+  "ResponseError",
 ];
 
-const elasticSearchErrorHandling = err => {
-    elasticErrors.forEach(error => {
-    if (err.name === error) {
-      logger.error();
-      return generateError("ElasticSearchError", "there was an error in the elastic search!");
-    }
-  });
-  return null;
+// const elasticSearchErrorHandling = err => {
+//     elasticErrors.forEach(error => {
+//     if (err.name === error) {
+//       logger.error();
+//       return generateError("ElasticSearchError", "there was an error in the elastic search!");
+//     }
+//   });
+//   return null;
+// };
+
+const elasticSearchErrorHandling = (logger) => {
+  return (err) => {
+    elasticErrors.forEach((error) => {
+      if (err.name === error) {
+        logger.errorLogger.error();
+        return generateError(
+          "ElasticSearchError",
+          "there was an error in the elastic search!"
+        );
+      }
+    });
+    return null;
+  };
 };
 module.exports = elasticSearchErrorHandling;

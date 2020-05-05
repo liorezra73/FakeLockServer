@@ -4,19 +4,18 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require("http");
 
-//routs/controllers
-const userRoute = require("./controllers/userController");
-const authRoute = require("./controllers/authenticationController");
-const postRoute = require("./controllers/postController");
-const commentRoute = require("./controllers/commentController");
-const postLikeRoute = require("./controllers/postLikeController");
-const photoRoute = require("./controllers/photoController");
-const commentLikeRoute = require("./controllers/commentLikeController");
+//routs
+const userRoute = require("./api/routes/userRoute");
+const authRoute = require("./api/routes/authenticationRoute");
+const postRoute = require("./api/routes/postRoute");
+const commentRoute = require("./api/routes/commentRoute");
+const postLikeRoute = require("./api/routes/postLikeRoute");
+const photoRoute = require("./api/routes/photoRoute");
+const commentLikeRoute = require("./api/routes/commentLikeRoute");
 
 const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server);
-
 
 app.use(
   "/staticFiles/postsPhotos",

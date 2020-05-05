@@ -1,5 +1,4 @@
 const generateError = require("../errors/generateError");
-const sharp = require("sharp");
 
 const photoMiddleware = (req, res, next) => {
   try {

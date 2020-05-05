@@ -1,7 +1,9 @@
 const { Client } = require("@elastic/elasticsearch");
-const config = require("config");
+// const config = require("config");
 
-const elasticNodeConfig = config.get("elasticNode");
-const elsaticClient = new Client({ node: elasticNodeConfig });
+const elsaticClient = (config) => {
+  const elasticNodeConfig = config.get("elasticNode");
+  return new Client({ node: elasticNodeConfig });
+};
 
 module.exports = elsaticClient;
