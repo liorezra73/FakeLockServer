@@ -1,0 +1,589 @@
+swagger: "2.0"
+info:
+  description: This is a server for "fakelock" social network
+
+  version: 0.0.1
+  title: Swagger fakelock api
+  contact:
+    name: Lior Ezra
+    email: admin@fakelock.com
+host: localhost:3000
+basePath: /api
+tags:
+  - name: photo
+    description: Access to fakelock photo
+  - name: post
+    description: Access to operations on fakelock posts
+  - name: comment
+    description: Access to operations on fakelock comments
+  - name: comment likes
+    description: Operations about fakelock comments likes
+  - name: post likes
+    description: Operations about fakelock post likes
+  - name: user
+    description: Operations about user
+  - name: authentication
+    description: Operations about authentication
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+securityDefinitions:
+  BasicAuth:
+    type: basic
+
+paths:
+  "/users":
+    get:
+      tags:
+        - user
+      summary: "get users"
+      description: "get users by startsWith query"
+      operationId: "getUsers"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "startsWith"
+          description: "startsWith object(model) to get users"
+          required: true
+          type: "string"
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: "return list of users using startWith query,can returned empty"
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        500:
+          description: "Something broke!"
+
+    post:
+      tags:
+        - user
+      summary: "create user"
+      description: ""
+      operationId: "register"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "user"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: "return indexed user id"
+        400:
+          description: "some property missing"
+        409:
+          description: "UsernameExist"
+        500:
+          description: "Something broke!"
+  "/posts/{postId}/comments/{commentId}/likes":
+    post:
+      tags:
+        - comment likes
+      summary: "add like to comment"
+      description: "add like to the comment and using socket io to emit count of likes"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+        - in: path
+          name: commentId
+          type: string
+          required: true
+          description: string ID of the comment
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: OK
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        404:
+          description: "CommentNotFound"
+        500:
+          description: "Something broke!"
+
+    delete:
+      tags:
+        - comment likes
+      summary: "delete like to comment"
+      description: "delete like from the comment and using socket io to emit count of likes"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+        - in: path
+          name: commentId
+          type: string
+          required: true
+          description: string ID of the comment
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: OK
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        404:
+          description: "CommentNotFound"
+        500:
+          description: "Something broke!"
+  "/posts/{postId}/likes":
+    delete:
+      tags:
+        - post likes
+      summary: "delete like to post"
+      description: "delete like from the post and using socket io to emit count of likes"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: OK
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        404:
+          description: "post not found"
+        500:
+          description: "Something broke!"
+    post:
+      tags:
+        - post likes
+      summary: "add like to post"
+      description: "add like to the post and using socket io to emit count of likes"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: OK
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        404:
+          description: "post not found"
+        500:
+          description: "Something broke!"
+  "/posts/{postId}/comments":
+    post:
+      tags:
+        - comment
+      summary: "create comment"
+      description: ""
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+        - in: "body"
+          name: "comment"
+          description: "required one at least"
+          required: true
+          schema:
+            $ref: "#/definitions/Comment"
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: "return indexed comment"
+        400:
+          description: "some property missing"
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        404:
+          description: "PostNotFound"
+        500:
+          description: "Something broke!"
+
+    get:
+      tags:
+        - comment
+      summary: "get post comments"
+      description: "get post comments to the post"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+        - in: query
+          description: "commentsQuery object(model) to get comments"
+          name: "commentsQuery"
+          type: "string"
+          required: true
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: "return comments by the commentsQuery,can be empty"
+        400:
+          description: "PostNotFound"
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        500:
+          description: "Something broke!"
+  "/posts/{postId}":
+    get:
+      tags:
+        - post
+      summary: "get fakelock post by id"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: postId
+          type: string
+          required: true
+          description: string ID of the post
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: "return requested post by id"
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        404:
+          description: "post not found"
+        500:
+          description: "Something broke!"
+  "/posts":
+    post:
+      tags:
+        - post
+      summary: "add new post to fakelock"
+      description: ""
+      operationId: "createPost"
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "formData"
+          name: "file"
+          type: "file"
+          required: true
+        - in: "formData"
+          name: "post"
+          type: "string"
+          required: true
+          description: "should be json object(post model)"
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: "return the id of the new post"
+        400:
+          description: "NotImage/some property missing"
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        406:
+          description: "ImageSizeNotValid"
+        500:
+          description: "Something broke!"
+    get:
+      tags:
+        - post
+      summary: "get fakelock posts by filter query"
+      description: ""
+      operationId: "getPosts"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "filter"
+          description: "filter object(model) to get posts after filter"
+          required: true
+          type: "string"
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: "return posts by the filter query,can be empty"
+        401:
+          description: "TokenExpiredError/NoToken/TokenNotValid/JsonWebTokenError"
+        500:
+          description: "Something broke!"
+  "/photos/{photoId}":
+    get:
+      tags:
+        - photo
+      summary: "get post photo"
+      description: "get post photo with photo name/id"
+      operationId: "getPhotoById"
+      consumes:
+        - "application/json"
+      produces:
+        - "image"
+      parameters:
+        - in: path
+          name: photoId
+          type: string
+          required: true
+          description: string ID of the photo
+      responses:
+        200:
+          description: "retuned requested photo"
+        404:
+          description: "Not found - failed to extract photo"
+  "/auth":
+    post:
+      tags:
+        - "authentication"
+      summary: "login operation"
+      description: "do login to get token"
+      operationId: "login"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "login"
+          description: "login object to get valid token"
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        200:
+          description: "get valid token"
+        404:
+          description: "UserNotFound"
+        400:
+          description: "PasswordInvalid"
+        500:
+          description: "Something broke!"
+
+definitions:
+  Comment:
+    description: required one at least
+    minProperties: 1
+    minItems: 1
+    type: object
+    properties:
+      content:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      usersTags:
+        type: array
+        items:
+          type: integer
+          format: int64
+    xml:
+      name: Comment
+  CommentsQuery:
+    required: ["size"]
+    type: object
+    properties:
+      size:
+        type: integer
+        format: int64
+        minimum: 1
+      searchAfterScore:
+        type: number
+        format: double
+      searchAfterId:
+        type: string
+    xml:
+      name: CommentsQuery
+  User:
+    required:
+      - username
+      - fullName
+      - addres
+      - password
+      - repeatPassword
+      - jobAddress
+      - birthDate
+    type: object
+    properties:
+      username:
+        type: string
+      fullName:
+        type: string
+      addres:
+        type: string
+      password:
+        type: string
+      repeatPassword:
+        type: string
+      jobAddress:
+        type: string
+      birthDate:
+        type: string
+        format: date
+    xml:
+      name: User
+  Login:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+    xml:
+      name: Login
+  Post:
+    required:
+      - text
+      - location
+    type: object
+    properties:
+      text:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      usersTags:
+        type: array
+        items:
+          type: integer
+          format: int64
+      location:
+        type: object
+        properties:
+          latitude:
+            type: number
+            format: double
+            minimum: -90
+            maximum: 90
+          longtitude:
+            type: number
+            format: double
+            minimum: -180
+            maximum: 180
+    xml:
+      name: Post
+  StartWith:
+    required:
+      - username
+    type: object
+    properties:
+      username:
+        type: string
+        minLength: 2
+        maxLength: 50
+  Filter:
+    required:
+      - size
+      - orderBy
+    type: object
+    properties:
+      size:
+        type: integer
+        format: int64
+        minimum: 1
+      searchAfterScore:
+        type: number
+        format: double
+        required:
+          - searchAfterId
+      searchAfterId:
+        type: string
+        required:
+          - searchAfterScore
+      latitude:
+        type: number
+        format: double
+        minimum: -90
+        maximum: 90
+        required:
+          - longtitude
+          - distance
+      longtitude:
+        type: number
+        format: double
+        minimum: -180
+        maximum: 180
+        required:
+          - latitude
+          - distance
+      distance:
+        type: number
+        format: double
+        minimum: 0
+        maximum: 19000000
+        required:
+          - latitude
+          - longtitude
+      tags:
+        type: array
+        items:
+          type: string
+      usersTags:
+        type: array
+        items:
+          type: integer
+          format: int64
+      startDate:
+        type: string
+        format: date
+        description: must be lower then endDate
+      endDate:
+        type: string
+        format: date
+        description: must be higher then startDate
+      orderBy:
+        type: string
+        enum: ["likes", "date"]
+    xml:
+      name: Filter

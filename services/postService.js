@@ -131,16 +131,21 @@ const postService = (
         const result = await postRepository.createPost(newPost);
         return result;
       } catch (err) {
-        const elasticError = elasticSearchErrorHandling(err);
-        if (elasticError) throw elasticError;
-        const dbError = dbErrorHandling(err);
-        if (dbError) throw dbError;
         switch (err.name) {
           case "uploadPhotoFailed":
             throw { ...err };
           default:
-            logger.errorLogger.error(err);
-            throw generateError("ServerError", "Something went wrong");
+            try {
+              photoService.deletePhoto(newPost.photo);
+              const elasticError = elasticSearchErrorHandling(err);
+              if (elasticError) throw elasticError;
+              const dbError = dbErrorHandling(err);
+              if (dbError) throw dbError;
+              logger.errorLogger.error(err);
+              throw generateError("ServerError", "Something went wrong");
+            } catch (err) {
+              throw generateError("ServerError", "Something went wrong");
+            }
         }
       }
     },

@@ -77,7 +77,7 @@ const authenticationService = (
             throw { ...err };
           default:
             logger.errorLogger.error(err);
-            throw generateError("ServerError", "Something went wrong");
+            throw generateError("ServerError", "something went wrong");
         }
       }
     },

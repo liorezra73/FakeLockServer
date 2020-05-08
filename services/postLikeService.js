@@ -70,7 +70,7 @@ const postLikeService = (
           case "PostNotFound":
             throw { ...err };
           default:
-            logger.error(err);
+            logger.errorLogger.error(err);
             throw generateError("ServerError", "Something went wrong");
         }
       }
@@ -93,7 +93,7 @@ const postLikeService = (
           case "PostNotFound":
             throw { ...err };
           default:
-            logger.error(err);
+            logger.errorLogger.error(err);
             throw generateError("ServerError", "Something went wrong");
         }
       }

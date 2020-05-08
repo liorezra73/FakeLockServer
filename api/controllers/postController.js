@@ -60,7 +60,6 @@ const postController = (postService) => {
         );
         res.status(200).json(result);
       } catch (err) {
-        console.log(err);
 
         err.status = 500;
         next(err);

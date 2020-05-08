@@ -12,7 +12,7 @@ const post = Joi.object({
       .min(-180)
       .max(180)
       .required()
-  }),
+  }).required(),
   tags: Joi.array().items(Joi.string()),
   usersTags: Joi.array().items(Joi.number())
 });

@@ -3,6 +3,42 @@ const config = require("config");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require("http");
+const swaggerTools = require("swagger-tools");
+const jsyaml = require("js-yaml");
+const fs = require("fs");
+const container = require("./dependency_injection/containerConfig");
+const logger = container.getModule("logger");
+
+
+
+const options = {
+  controllers: "./api/controllers",
+  useStubs: process.env.NODE_ENV === "development" ? true : false, // Conditionally turn on stubs (mock mode)
+};
+
+let swaggerDoc;
+
+try {
+  let fileContents = fs.readFileSync("./swagger/swagger.yaml", "utf8");
+  swaggerDoc = jsyaml.safeLoad(fileContents);
+} catch (e) {
+  logger.errorLogger.error(err);
+}
+
+
+swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
+  // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
+  app.use(middleware.swaggerMetadata());
+
+  // Validate Swagger requests
+  app.use(middleware.swaggerValidator());
+
+  // Route validated requests to appropriate controller
+  app.use(middleware.swaggerRouter(options));
+
+  // Serve the Swagger documents and Swagger UI
+  app.use(middleware.swaggerUi());
+});
 
 //routs
 const userRoute = require("./api/routes/userRoute");
@@ -25,6 +61,7 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -69,4 +106,3 @@ module.exports.server = server.listen(port, () => {
   console.log(`listening on port ${port}...`);
 });
 
-module.exports.io = io;

@@ -50,6 +50,15 @@ const photoService = (config, fs, logger) => {
   const fsPromises = fs.promises;
   const photoPath = config.get("photoPath");
   return {
+    deletePhoto: (name) => {
+      const url = `${photoPath}\\${name}.webp`;
+      fs.unlink(url, (err) => {
+        if (err) {
+          logger.errorLogger.error(err);
+          throw generateError("PhotoNotDeleted", "failed to delete photo");
+        }
+      });
+    },
     uploadPhoto: async (photo) => {
       try {
         const res = await sharp(photo.buffer).webp();
